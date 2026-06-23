@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Pol'and'Rock 2026 – Planer</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:sans-serif;background:#0a0a0f;color:#eee;min-height:100vh}
+.header{background:#0d0d0d;padding:16px;text-align:center;border-bottom:2px solid #FF6B00}
+.header h1{color:#FF6B00;font-size:22px;letter-spacing:2px;font-weight:700}
+.header p{color:#888;font-size:11px;margin-top:3px;letter-spacing:2px}
+.login{padding:32px 16px;max-width:380px;margin:0 auto}
+.login p{color:#888;font-size:14px;margin-bottom:16px;text-align:center}
+input{width:100%;background:#111;border:1px solid #333;color:#eee;border-radius:8px;padding:12px;font-size:16px;margin-bottom:12px;outline:none}
+input:focus{border-color:#FF6B00}
+.btn{width:100%;background:#FF6B00;color:#fff;border:none;border-radius:8px;padding:12px;font-size:15px;font-weight:700;cursor:pointer}
+.btn:hover{background:#e05a00}
+.btn-sm{background:transparent;border:1px solid #444;color:#888;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer}
+.btn-sm:hover{border-color:#666;color:#aaa}
+.main{padding:12px;max-width:700px;margin:0 auto}
+.user-bar{display:flex;align-items:center;justify-content:space-between;background:#111;border-radius:8px;padding:10px 14px;margin-bottom:14px}
+.user-bar span{color:#FF6B00;font-weight:700;font-size:14px}
+.user-bar div{display:flex;gap:6px}
+.tabs{display:flex;gap:8px;margin-bottom:14px}
+.tab{flex:1;padding:9px;border-radius:8px;border:1px solid #333;background:transparent;color:#666;font-size:13px;cursor:pointer;text-align:center;font-weight:600}
+.tab.active{background:#FF6B00;color:#fff;border-color:#FF6B00}
+.day-block{margin-bottom:18px}
+.day-label{color:#FF6B00;font-size:10px;letter-spacing:3px;font-weight:700;padding:6px 10px;background:#1a0800;border-radius:6px;text-align:center;margin-bottom:8px}
+.stage-label{color:#555;font-size:9px;letter-spacing:2px;margin:8px 0 4px 2px;font-weight:600}
+.concerts{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px}
+.concert{border-radius:8px;padding:9px 10px;cursor:pointer;border:1.5px solid transparent;transition:all 0.15s;position:relative}
+.concert:hover{opacity:0.85}
+.concert.selected{border-color:#FF6B00!important;box-shadow:0 0 0 1px #FF6B0055}
+.cname{font-size:11px;font-weight:700;line-height:1.3}
+.ctime{font-size:10px;margin-top:2px;opacity:0.55}
+.attendees{margin-top:6px;display:flex;flex-wrap:wrap;gap:3px}
+.avatar{font-size:9px;padding:2px 5px;border-radius:8px;background:#FF6B0018;color:#FF6B00;border:1px solid #FF6B0044;font-weight:600}
+.avatar.me{background:#FF6B0033;border-color:#FF6B00}
+.view-all{background:#111;border-radius:8px;padding:14px}
+.person-row{padding:10px 0;border-bottom:1px solid #1a1a1a}
+.person-row:last-child{border-bottom:none}
+.person-name{color:#FF6B00;font-weight:700;font-size:13px;margin-bottom:6px}
+.badges{display:flex;flex-wrap:wrap;gap:4px}
+.badge{font-size:10px;padding:3px 8px;border-radius:8px;background:#1a1a1a;color:#aaa;border:1px solid #2a2a2a}
+.empty{text-align:center;color:#444;padding:24px;font-size:13px}
+.sync-info{text-align:center;color:#333;font-size:10px;padding:8px;letter-spacing:1px}
+.loading-screen{text-align:center;padding:60px 20px;color:#555;font-size:14px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>POL'AND'ROCK 2026</h1>
+  <p>30.07 – 01.08 · CZAPLINEK</p>
+</div>
+
+<div id="login-screen" class="login">
+  <p>Wpisz swoje imię żeby zaznaczać koncerty i widzieć plany znajomych</p>
+  <input id="name-input" placeholder="Twoje imię..." maxlength="20" onkeydown="if(event.key==='Enter')login()"/>
+  <button class="btn" onclick="login()">Wejdź</button>
+</div>
+
+<div id="loading-screen" class="loading-screen" style="display:none">Łączenie z bazą danych...</div>
+
+<div id="main-screen" style="display:none">
+  <div class="main">
+    <div class="user-bar">
+      <span id="username-display"></span>
+      <div>
+        <button class="btn-sm" onclick="refreshData()">Odśwież</button>
+        <button class="btn-sm" onclick="logout()">Wyloguj</button>
+      </div>
+    </div>
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('my')">Mój plan</div>
+      <div class="tab" onclick="switchTab('all')">Wszyscy</div>
+    </div>
+    <div id="tab-my"><div id="concerts-list"></div></div>
+    <div id="tab-all" style="display:none"><div class="view-all" id="all-view"><div class="empty">Ładowanie...</div></div></div>
+    <div class="sync-info" id="sync-info">ostatnia synchronizacja: —</div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDntl7g95YVT3j1mIZvNAK31CMFm8smDLw",
+  authDomain: "polandrock-2026.firebaseapp.com",
+  databaseURL: "https://polandrock-2026-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "polandrock-2026",
+  storageBucket: "polandrock-2026.firebasestorage.app",
+  messagingSenderId: "2937493039",
+  appId: "1:2937493039:web:f01c9ddec0f046ebe1d8da",
+  measurementId: "G-EP5GV5N14S"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const CONCERTS = [
+  {day:'CZWARTEK · 30.07',stage:'DUŻA SCENA',id:'myslovitz',name:'Myslovitz',time:'00:10',color:'#0a0a2a',border:'#5050cc'},
+  {day:'CZWARTEK · 30.07',stage:'DUŻA SCENA',id:'godsmack',name:'Godsmack',time:'22:40',color:'#1a0a00',border:'#e85d04'},
+  {day:'CZWARTEK · 30.07',stage:'DUŻA SCENA',id:'dropkick',name:'Dropkick Murphys',time:'21:00',color:'#0a1a00',border:'#3a7d00'},
+  {day:'CZWARTEK · 30.07',stage:'DUŻA SCENA',id:'orbit',name:'Orbit Culture',time:'19:30',color:'#1a0a00',border:'#e85d04'},
+  {day:'CZWARTEK · 30.07',stage:'DUŻA SCENA',id:'luc',name:'L.U.C. i Rebel Babel Orchestra',time:'18:00',color:'#0a0a2a',border:'#5050cc'},
+  {day:'CZWARTEK · 30.07',stage:'DUŻA SCENA',id:'vended',name:'Vended',time:'16:30',color:'#1a0a00',border:'#e85d04'},
+  {day:'CZWARTEK · 30.07',stage:'DUŻA SCENA',id:'lottery',name:'The Lottery Winners',time:'15:10',color:'#1a0a00',border:'#e85d04'},
+  {day:'CZWARTEK · 30.07',stage:'MAŁA SCENA',id:'variusmanx',name:'Varius Manx + K. Stankiewicz',time:'22:45',color:'#001a1a',border:'#009999'},
+  {day:'CZWARTEK · 30.07',stage:'MAŁA SCENA',id:'jucho',name:'Jucho',time:'21:40',color:'#001a1a',border:'#009999'},
+  {day:'CZWARTEK · 30.07',stage:'MAŁA SCENA',id:'lipali',name:'Lipali',time:'20:25',color:'#001a1a',border:'#009999'},
+  {day:'CZWARTEK · 30.07',stage:'MAŁA SCENA',id:'lejmipol',name:'Lej mi Pół',time:'19:30',color:'#001a1a',border:'#009999'},
+  {day:'CZWARTEK · 30.07',stage:'MAŁA SCENA',id:'wiraszko',name:'Wiraszko',time:'18:25',color:'#001a1a',border:'#009999'},
+  {day:'CZWARTEK · 30.07',stage:'MAŁA SCENA',id:'trackstone',name:'Trackstone',time:'17:30',color:'#001a1a',border:'#009999'},
+  {day:'PIĄTEK · 31.07',stage:'DUŻA SCENA',id:'pod',name:'P.O.D.',time:'00:10',color:'#1a0a00',border:'#e85d04'},
+  {day:'PIĄTEK · 31.07',stage:'DUŻA SCENA',id:'nocny',name:'Nocny Kochanek',time:'22:30',color:'#1a001a',border:'#cc00cc'},
+  {day:'PIĄTEK · 31.07',stage:'DUŻA SCENA',id:'alborosie',name:'Alborosie & The Shengen Clan',time:'21:00',color:'#001a00',border:'#3a7d00'},
+  {day:'PIĄTEK · 31.07',stage:'DUŻA SCENA',id:'dzem',name:'Dżem',time:'19:30',color:'#1a0a00',border:'#e85d04'},
+  {day:'PIĄTEK · 31.07',stage:'DUŻA SCENA',id:'spidergawd',name:'Spidergawd',time:'18:00',color:'#1a0a00',border:'#e85d04'},
+  {day:'PIĄTEK · 31.07',stage:'DUŻA SCENA',id:'dziwna',name:'Dziwna Wiosna',time:'16:30',color:'#0a0a2a',border:'#5050cc'},
+  {day:'PIĄTEK · 31.07',stage:'DUŻA SCENA',id:'bumbum',name:'Bum Bum Orkestar & Friends',time:'15:00',color:'#0a0a2a',border:'#5050cc'},
+  {day:'PIĄTEK · 31.07',stage:'MAŁA SCENA',id:'lzy',name:'Łzy',time:'00:10',color:'#001a1a',border:'#009999'},
+  {day:'PIĄTEK · 31.07',stage:'MAŁA SCENA',id:'kasialins',name:'Kasia Lins "Obyw. K.L."',time:'23:25',color:'#001a1a',border:'#009999'},
+  {day:'PIĄTEK · 31.07',stage:'MAŁA SCENA',id:'dariaslasko',name:'Daria ze Śląska',time:'21:55',color:'#001a1a',border:'#009999'},
+  {day:'PIĄTEK · 31.07',stage:'MAŁA SCENA',id:'kobranocka',name:'Kobranocka',time:'20:25',color:'#001a1a',border:'#009999'},
+  {day:'PIĄTEK · 31.07',stage:'MAŁA SCENA',id:'meteor',name:'Meteor Airlines',time:'19:20',color:'#001a1a',border:'#009999'},
+  {day:'PIĄTEK · 31.07',stage:'MAŁA SCENA',id:'adhd',name:'ADHD',time:'18:25',color:'#001a1a',border:'#009999'},
+  {day:'PIĄTEK · 31.07',stage:'MAŁA SCENA',id:'zuta',name:'Zuta',time:'17:30',color:'#001a1a',border:'#009999'},
+  {day:'SOBOTA · 01.08',stage:'DUŻA SCENA',id:'bukartyk',name:'Bukartyk & Ajagore',time:'01:30',color:'#1a1000',border:'#cc8800'},
+  {day:'SOBOTA · 01.08',stage:'DUŻA SCENA',id:'happysad',name:'Happysad',time:'00:00',color:'#001a00',border:'#3a7d00'},
+  {day:'SOBOTA · 01.08',stage:'DUŻA SCENA',id:'eagleeye',name:'Eagle Eye Cherry',time:'22:30',color:'#1a1000',border:'#cc8800'},
+  {day:'SOBOTA · 01.08',stage:'DUŻA SCENA',id:'kosheen',name:'Kosheen',time:'21:00',color:'#1a001a',border:'#cc00cc'},
+  {day:'SOBOTA · 01.08',stage:'DUŻA SCENA',id:'wargasm',name:'Wargasm',time:'19:30',color:'#1a0a00',border:'#e85d04'},
+  {day:'SOBOTA · 01.08',stage:'DUŻA SCENA',id:'malevolence',name:'Malevolence',time:'18:00',color:'#1a0a00',border:'#e85d04'},
+  {day:'SOBOTA · 01.08',stage:'DUŻA SCENA',id:'helenine',name:'Heľenine oči',time:'16:30',color:'#0a0a2a',border:'#5050cc'},
+  {day:'SOBOTA · 01.08',stage:'DUŻA SCENA',id:'orkiestra',name:'Orkiestra Dorosłych Dzieci',time:'15:00',color:'#0a0a2a',border:'#5050cc'},
+  {day:'SOBOTA · 01.08',stage:'MAŁA SCENA',id:'walus',name:'Waluśkraksakryzys',time:'23:20',color:'#001a1a',border:'#009999'},
+  {day:'SOBOTA · 01.08',stage:'MAŁA SCENA',id:'trupatrupa',name:'Trupa Trupa',time:'21:55',color:'#001a1a',border:'#009999'},
+  {day:'SOBOTA · 01.08',stage:'MAŁA SCENA',id:'ewelinaflinta',name:'Ewelina Flinta',time:'20:35',color:'#001a1a',border:'#009999'},
+  {day:'SOBOTA · 01.08',stage:'MAŁA SCENA',id:'specialguest',name:'Special Guest',time:'19:30',color:'#001a1a',border:'#009999'},
+  {day:'SOBOTA · 01.08',stage:'MAŁA SCENA',id:'atmosphere',name:'Atmosphere / Marcin Rozynek',time:'18:25',color:'#001a1a',border:'#009999'},
+  {day:'SOBOTA · 01.08',stage:'MAŁA SCENA',id:'lostinyou',name:'Lost In You',time:'17:30',color:'#001a1a',border:'#009999'},
+];
+
+let currentUser = localStorage.getItem('pr26_user') || '';
+let allData = {};
+let currentTab = 'my';
+
+function login() {
+  const name = document.getElementById('name-input').value.trim();
+  if (!name) return;
+  currentUser = name;
+  localStorage.setItem('pr26_user', name);
+  showMain();
+}
+
+function logout() {
+  currentUser = '';
+  localStorage.removeItem('pr26_user');
+  document.getElementById('login-screen').style.display = 'block';
+  document.getElementById('main-screen').style.display = 'none';
+}
+window.logout = logout;
+
+function showMain() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('loading-screen').style.display = 'block';
+  document.getElementById('username-display').textContent = currentUser;
+  startListening();
+}
+
+function startListening() {
+  const dbRef = ref(db, 'attendees');
+  onValue(dbRef, (snapshot) => {
+    allData = snapshot.val() || {};
+    if (!allData[currentUser]) allData[currentUser] = {};
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('main-screen').style.display = 'block';
+    renderMyPlan();
+    renderAll();
+    const now = new Date();
+    document.getElementById('sync-info').textContent =
+      `ostatnia synchronizacja: ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
+  });
+}
+
+async function toggleConcert(id) {
+  if (!allData[currentUser]) allData[currentUser] = {};
+  const current = allData[currentUser][id] || false;
+  allData[currentUser][id] = !current;
+  await set(ref(db, `attendees/${currentUser}`), allData[currentUser]);
+}
+window.toggleConcert = toggleConcert;
+
+function isSelected(id) {
+  return !!(allData[currentUser] && allData[currentUser][id]);
+}
+
+function getAttendees(id) {
+  return Object.entries(allData)
+    .filter(([u, ids]) => ids && ids[id])
+    .map(([u]) => u);
+}
+
+function renderMyPlan() {
+  const days = [...new Set(CONCERTS.map(c => c.day))];
+  let html = '';
+  for (const day of days) {
+    const stages = [...new Set(CONCERTS.filter(c => c.day === day).map(c => c.stage))];
+    html += `<div class="day-block"><div class="day-label">${day}</div>`;
+    for (const stage of stages) {
+      const cs = CONCERTS.filter(c => c.day === day && c.stage === stage);
+      html += `<div class="stage-label">${stage}</div><div class="concerts">`;
+      for (const c of cs) {
+        const sel = isSelected(c.id);
+        const att = getAttendees(c.id);
+        const avatars = att.map(u =>
+          `<span class="avatar${u===currentUser?' me':''}">${u}</span>`
+        ).join('');
+        html += `<div class="concert${sel?' selected':''}"
+          style="background:${c.color};border-color:${sel?'#FF6B00':c.border}"
+          onclick="toggleConcert('${c.id}')">
+          <div class="cname" style="color:${c.border}">${c.name}</div>
+          <div class="ctime">${c.time}</div>
+          ${att.length ? `<div class="attendees">${avatars}</div>` : ''}
+        </div>`;
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+  document.getElementById('concerts-list').innerHTML = html;
+}
+
+function renderAll() {
+  const users = Object.keys(allData);
+  if (!users.length) {
+    document.getElementById('all-view').innerHTML = '<div class="empty">Nikt jeszcze nie zaznaczył koncertów.</div>';
+    return;
+  }
+  let html = '';
+  for (const user of users) {
+    const ids = allData[user] || {};
+    const selected = CONCERTS.filter(c => ids[c.id]);
+    if (!selected.length) continue;
+    html += `<div class="person-row">
+      <div class="person-name">${user}</div>
+      <div class="badges">${selected.map(c =>
+        `<span class="badge">${c.name} <span style="color:#555">${c.time}</span></span>`
+      ).join('')}</div>
+    </div>`;
+  }
+  document.getElementById('all-view').innerHTML = html || '<div class="empty">Nikt jeszcze nie zaznaczył koncertów.</div>';
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach((t, i) =>
+    t.classList.toggle('active', (i===0&&tab==='my')||(i===1&&tab==='all'))
+  );
+  document.getElementById('tab-my').style.display = tab==='my' ? 'block' : 'none';
+  document.getElementById('tab-all').style.display = tab==='all' ? 'block' : 'none';
+}
+window.switchTab = switchTab;
+
+function refreshData() {
+  document.getElementById('sync-info').textContent = 'odświeżanie...';
+}
+window.refreshData = refreshData;
+
+window.login = login;
+
+if (currentUser) showMain();
+</script>
+</body>
+</html>
