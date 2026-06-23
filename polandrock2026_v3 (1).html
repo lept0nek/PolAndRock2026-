@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Pol'and'Rock 2026 – Planer</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:sans-serif;background:#0a0a0f;color:#eee;min-height:100vh}
+.header{background:#0d0d0d;padding:14px;text-align:center;border-bottom:2px solid #FF6B00;position:sticky;top:0;z-index:100}
+.header h1{color:#FF6B00;font-size:20px;letter-spacing:2px;font-weight:700}
+.header p{color:#888;font-size:10px;margin-top:2px;letter-spacing:2px}
+.login{padding:32px 16px;max-width:380px;margin:0 auto}
+.login p{color:#888;font-size:14px;margin-bottom:16px;text-align:center}
+input{width:100%;background:#111;border:1px solid #333;color:#eee;border-radius:8px;padding:12px;font-size:16px;margin-bottom:12px;outline:none}
+input:focus{border-color:#FF6B00}
+.btn{width:100%;background:#FF6B00;color:#fff;border:none;border-radius:8px;padding:12px;font-size:15px;font-weight:700;cursor:pointer}
+.btn:hover{background:#e05a00}
+.btn-sm{background:transparent;border:1px solid #444;color:#888;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer}
+.btn-sm:hover{border-color:#666;color:#aaa}
+.main{padding:12px;max-width:720px;margin:0 auto}
+.user-bar{display:flex;align-items:center;justify-content:space-between;background:#111;border-radius:8px;padding:10px 14px;margin-bottom:12px}
+.user-bar span{color:#FF6B00;font-weight:700;font-size:14px}
+.user-bar div{display:flex;gap:6px}
+.tabs{display:flex;gap:6px;margin-bottom:14px}
+.tab{flex:1;padding:9px 4px;border-radius:8px;border:1px solid #333;background:transparent;color:#666;font-size:12px;cursor:pointer;text-align:center;font-weight:600}
+.tab.active{background:#FF6B00;color:#fff;border-color:#FF6B00}
+.day-block{margin-bottom:18px}
+.day-label{color:#FF6B00;font-size:10px;letter-spacing:3px;font-weight:700;padding:6px 10px;background:#1a0800;border-radius:6px;text-align:center;margin-bottom:8px}
+.stage-label{color:#555;font-size:9px;letter-spacing:2px;margin:8px 0 4px 2px;font-weight:600}
+.concerts{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px}
+.concert{border-radius:8px;padding:9px 10px;cursor:pointer;border:1.5px solid transparent;transition:all 0.15s}
+.concert:hover{opacity:0.85}
+.concert.selected{border-color:#FF6B00!important;box-shadow:0 0 0 1px #FF6B0055}
+.cname{font-size:11px;font-weight:700;line-height:1.3}
+.ctime{font-size:10px;margin-top:2px;opacity:0.55}
+.attendees{margin-top:6px;display:flex;flex-wrap:wrap;gap:3px}
+.avatar{font-size:9px;padding:2px 5px;border-radius:8px;background:#FF6B0018;color:#FF6B00;border:1px solid #FF6B0044;font-weight:600}
+.avatar.me{background:#FF6B0033;border-color:#FF6B00}
+.view-all{background:#111;border-radius:8px;padding:14px}
+.person-row{padding:10px 0;border-bottom:1px solid #1a1a1a}
+.person-row:last-child{border-bottom:none}
+.person-name{color:#FF6B00;font-weight:700;font-size:13px;margin-bottom:6px}
+.badges{display:flex;flex-wrap:wrap;gap:4px}
+.badge{font-size:10px;padding:3px 8px;border-radius:8px;background:#1a1a1a;color:#aaa;border:1px solid #2a2a2a}
+.empty{text-align:center;color:#444;padding:24px;font-size:13px}
+.sync-info{text-align:center;color:#333;font-size:10px;padding:6px;letter-spacing:1px}
+.loading-screen{text-align:center;padding:60px 20px;color:#555;font-size:14px}
+
+/* CHAT */
+.chat-wrap{display:flex;flex-direction:column;gap:10px}
+.chat-messages{background:#111;border-radius:10px;padding:12px;min-height:300px;max-height:500px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+.msg{padding:8px 12px;border-radius:8px;max-width:85%}
+.msg.mine{background:#1a0800;border:1px solid #e85d0444;align-self:flex-end}
+.msg.others{background:#111822;border:1px solid #33333388;align-self:flex-start}
+.msg-author{font-size:10px;font-weight:700;color:#FF6B00;margin-bottom:3px}
+.msg.others .msg-author{color:#8888ff}
+.msg-text{font-size:13px;color:#ddd;line-height:1.4;word-break:break-word}
+.msg-time{font-size:9px;color:#444;margin-top:3px;text-align:right}
+.chat-input-row{display:flex;gap:8px;align-items:flex-end}
+.chat-input-row input{margin:0;flex:1}
+.chat-send{background:#FF6B00;color:#fff;border:none;border-radius:8px;padding:12px 16px;font-size:14px;cursor:pointer;font-weight:700;white-space:nowrap}
+.chat-send:hover{background:#e05a00}
+.chat-notice{font-size:11px;color:#444;text-align:center;padding:6px}
+
+/* MAPA */
+.map-wrap{background:#111;border-radius:10px;overflow:hidden}
+.map-svg-wrap{overflow-x:auto;overflow-y:auto;max-height:70vh}
+.map-legend{padding:12px;display:flex;flex-wrap:wrap;gap:8px}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#aaa}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.map-title{padding:10px 12px;color:#FF6B00;font-size:12px;font-weight:700;letter-spacing:1px;border-bottom:1px solid #222}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>POL'AND'ROCK 2026</h1>
+  <p>30.07 – 01.08 · CZAPLINEK</p>
+</div>
+
+<div id="login-screen" class="login">
+  <p>Wpisz swoje imię żeby zaznaczać koncerty i widzieć plany znajomych</p>
+  <input id="name-input" placeholder="Twoje imię..." maxlength="20" onkeydown="if(event.key==='Enter')login()"/>
+  <button class="btn" onclick="login()">Wejdź</button>
+</div>
+
+<div id="loading-screen" class="loading-screen" style="display:none">Łączenie z bazą danych...</div>
+
+<div id="main-screen" style="display:none">
+  <div class="main">
+    <div class="user-bar">
+      <span id="username-display"></span>
+      <div>
+        <button class="btn-sm" onclick="logout()">Wyloguj</button>
+      </div>
+    </div>
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('my')">Mój plan</div>
+      <div class="tab" onclick="switchTab('all')">Wszyscy</div>
+      <div class="tab" onclick="switchTab('chat')">Czat</div>
+      <div class="tab" onclick="switchTab('map')">Mapa</div>
+    </div>
+
+    <!-- PLAN -->
+    <div id="tab-my"><div id="concerts-list"></div></div>
+
+    <!-- WSZYSCY -->
+    <div id="tab-all" style="display:none">
+      <div class="view-all" id="all-view"><div class="empty">Ładowanie...</div></div>
+    </div>
+
+    <!-- CZAT -->
+    <div id="tab-chat" style="display:none">
+      <div class="chat-wrap">
+        <div class="chat-messages" id="chat-messages">
+          <div class="empty">Brak wiadomości. Napisz coś!</div>
+        </div>
+        <div class="chat-input-row">
+          <input id="chat-input" placeholder="Napisz wiadomość..." maxlength="300" onkeydown="if(event.key==='Enter')sendMsg()"/>
+          <button class="chat-send" onclick="sendMsg()">Wyślij</button>
+        </div>
+        <div class="chat-notice">Widoczne dla wszystkich uczestników</div>
+      </div>
+    </div>
+
+    <!-- MAPA -->
+    <div id="tab-map" style="display:none">
+      <div style="background:#111;border-radius:10px;overflow:hidden">
+        <div style="padding:10px 12px;color:#FF6B00;font-size:12px;font-weight:700;letter-spacing:1px;border-bottom:1px solid #222;display:flex;justify-content:space-between;align-items:center">
+          <span>MAPA TERENU FESTIWALU</span>
+          <span style="color:#555;font-size:10px;font-weight:400">szczypaj/scroll = zoom · przeciągnij = przesuń</span>
+        </div>
+        <div id="map-container" style="overflow:hidden;width:100%;height:70vh;position:relative;cursor:grab;background:#1a1f0a">
+          <img id="map-img" src="https://lept0nek.github.io/PolAndRock2026-/mapka.jpg"
+            style="position:absolute;top:0;left:0;transform-origin:0 0;user-select:none;-webkit-user-drag:none;max-width:none"
+            draggable="false"/>
+        </div>
+        <div style="padding:8px 12px;display:flex;flex-wrap:wrap;gap:10px;border-top:1px solid #222">
+          <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:#aaa"><span style="width:10px;height:10px;border-radius:50%;background:#FF6B00;display:inline-block"></span>Main Stage</div>
+          <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:#aaa"><span style="width:10px;height:10px;border-radius:50%;background:#00ccff;display:inline-block"></span>Second Stage / ASP</div>
+          <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:#aaa"><span style="width:10px;height:10px;border-radius:50%;background:#44cc44;display:inline-block"></span>Rock Camp</div>
+          <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:#aaa"><span style="width:10px;height:10px;border-radius:50%;background:#888;display:inline-block"></span>Parkingi</div>
+        </div>
+      </div>
+    </div>
+
+        <div class="sync-info" id="sync-info"></div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+import { getDatabase, ref, set, push, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDntl7g95YVT3j1mIZvNAK31CMFm8smDLw",
+  authDomain: "polandrock-2026.firebaseapp.com",
+  databaseURL: "https://polandrock-2026-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "polandrock-2026",
+  storageBucket: "polandrock-2026.firebasestorage.app",
+  messagingSenderId: "2937493039",
+  appId: "1:2937493039:web:f01c9ddec0f046ebe1d8da"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const CONCERTS = [
+  {day:'CZWARTEK · 30.07',stage:'DUŻA SCENA',id:'myslovitz',name:'Myslovitz',time:'00:10',color:'#0a0a2a',border:'#5050cc'},
+  {day:'CZWARTEK · 30.07',stage:'DUŻA SCENA',id:'godsmack',name:'Godsmack',time:'22:40',color:'#1a0a00',border:'#e85d04'},
+  {day:'CZWARTEK · 30.07',stage:'DUŻA SCENA',id:'dropkick',name:'Dropkick Murphys',time:'21:00',color:'#0a1a00',border:'#3a7d00'},
+  {day:'CZWARTEK · 30.07',stage:'DUŻA SCENA',id:'orbit',name:'Orbit Culture',time:'19:30',color:'#1a0a00',border:'#e85d04'},
+  {day:'CZWARTEK · 30.07',stage:'DUŻA SCENA',id:'luc',name:'L.U.C. i Rebel Babel Orchestra',time:'18:00',color:'#0a0a2a',border:'#5050cc'},
+  {day:'CZWARTEK · 30.07',stage:'DUŻA SCENA',id:'vended',name:'Vended',time:'16:30',color:'#1a0a00',border:'#e85d04'},
+  {day:'CZWARTEK · 30.07',stage:'DUŻA SCENA',id:'lottery',name:'The Lottery Winners',time:'15:10',color:'#1a0a00',border:'#e85d04'},
+  {day:'CZWARTEK · 30.07',stage:'MAŁA SCENA',id:'variusmanx',name:'Varius Manx + K. Stankiewicz',time:'22:45',color:'#001a1a',border:'#009999'},
+  {day:'CZWARTEK · 30.07',stage:'MAŁA SCENA',id:'jucho',name:'Jucho',time:'21:40',color:'#001a1a',border:'#009999'},
+  {day:'CZWARTEK · 30.07',stage:'MAŁA SCENA',id:'lipali',name:'Lipali',time:'20:25',color:'#001a1a',border:'#009999'},
+  {day:'CZWARTEK · 30.07',stage:'MAŁA SCENA',id:'lejmipol',name:'Lej mi Pół',time:'19:30',color:'#001a1a',border:'#009999'},
+  {day:'CZWARTEK · 30.07',stage:'MAŁA SCENA',id:'wiraszko',name:'Wiraszko',time:'18:25',color:'#001a1a',border:'#009999'},
+  {day:'CZWARTEK · 30.07',stage:'MAŁA SCENA',id:'trackstone',name:'Trackstone',time:'17:30',color:'#001a1a',border:'#009999'},
+  {day:'PIĄTEK · 31.07',stage:'DUŻA SCENA',id:'pod',name:'P.O.D.',time:'00:10',color:'#1a0a00',border:'#e85d04'},
+  {day:'PIĄTEK · 31.07',stage:'DUŻA SCENA',id:'nocny',name:'Nocny Kochanek',time:'22:30',color:'#1a001a',border:'#cc00cc'},
+  {day:'PIĄTEK · 31.07',stage:'DUŻA SCENA',id:'alborosie',name:'Alborosie & The Shengen Clan',time:'21:00',color:'#001a00',border:'#3a7d00'},
+  {day:'PIĄTEK · 31.07',stage:'DUŻA SCENA',id:'dzem',name:'Dżem',time:'19:30',color:'#1a0a00',border:'#e85d04'},
+  {day:'PIĄTEK · 31.07',stage:'DUŻA SCENA',id:'spidergawd',name:'Spidergawd',time:'18:00',color:'#1a0a00',border:'#e85d04'},
+  {day:'PIĄTEK · 31.07',stage:'DUŻA SCENA',id:'dziwna',name:'Dziwna Wiosna',time:'16:30',color:'#0a0a2a',border:'#5050cc'},
+  {day:'PIĄTEK · 31.07',stage:'DUŻA SCENA',id:'bumbum',name:'Bum Bum Orkestar & Friends',time:'15:00',color:'#0a0a2a',border:'#5050cc'},
+  {day:'PIĄTEK · 31.07',stage:'MAŁA SCENA',id:'lzy',name:'Łzy',time:'00:10',color:'#001a1a',border:'#009999'},
+  {day:'PIĄTEK · 31.07',stage:'MAŁA SCENA',id:'kasialins',name:'Kasia Lins "Obyw. K.L."',time:'23:25',color:'#001a1a',border:'#009999'},
+  {day:'PIĄTEK · 31.07',stage:'MAŁA SCENA',id:'dariaslasko',name:'Daria ze Śląska',time:'21:55',color:'#001a1a',border:'#009999'},
+  {day:'PIĄTEK · 31.07',stage:'MAŁA SCENA',id:'kobranocka',name:'Kobranocka',time:'20:25',color:'#001a1a',border:'#009999'},
+  {day:'PIĄTEK · 31.07',stage:'MAŁA SCENA',id:'meteor',name:'Meteor Airlines',time:'19:20',color:'#001a1a',border:'#009999'},
+  {day:'PIĄTEK · 31.07',stage:'MAŁA SCENA',id:'adhd',name:'ADHD',time:'18:25',color:'#001a1a',border:'#009999'},
+  {day:'PIĄTEK · 31.07',stage:'MAŁA SCENA',id:'zuta',name:'Zuta',time:'17:30',color:'#001a1a',border:'#009999'},
+  {day:'SOBOTA · 01.08',stage:'DUŻA SCENA',id:'bukartyk',name:'Bukartyk & Ajagore',time:'01:30',color:'#1a1000',border:'#cc8800'},
+  {day:'SOBOTA · 01.08',stage:'DUŻA SCENA',id:'happysad',name:'Happysad',time:'00:00',color:'#001a00',border:'#3a7d00'},
+  {day:'SOBOTA · 01.08',stage:'DUŻA SCENA',id:'eagleeye',name:'Eagle Eye Cherry',time:'22:30',color:'#1a1000',border:'#cc8800'},
+  {day:'SOBOTA · 01.08',stage:'DUŻA SCENA',id:'kosheen',name:'Kosheen',time:'21:00',color:'#1a001a',border:'#cc00cc'},
+  {day:'SOBOTA · 01.08',stage:'DUŻA SCENA',id:'wargasm',name:'Wargasm',time:'19:30',color:'#1a0a00',border:'#e85d04'},
+  {day:'SOBOTA · 01.08',stage:'DUŻA SCENA',id:'malevolence',name:'Malevolence',time:'18:00',color:'#1a0a00',border:'#e85d04'},
+  {day:'SOBOTA · 01.08',stage:'DUŻA SCENA',id:'helenine',name:'Heľenine oči',time:'16:30',color:'#0a0a2a',border:'#5050cc'},
+  {day:'SOBOTA · 01.08',stage:'DUŻA SCENA',id:'orkiestra',name:'Orkiestra Dorosłych Dzieci',time:'15:00',color:'#0a0a2a',border:'#5050cc'},
+  {day:'SOBOTA · 01.08',stage:'MAŁA SCENA',id:'walus',name:'Waluśkraksakryzys',time:'23:20',color:'#001a1a',border:'#009999'},
+  {day:'SOBOTA · 01.08',stage:'MAŁA SCENA',id:'trupatrupa',name:'Trupa Trupa',time:'21:55',color:'#001a1a',border:'#009999'},
+  {day:'SOBOTA · 01.08',stage:'MAŁA SCENA',id:'ewelinaflinta',name:'Ewelina Flinta',time:'20:35',color:'#001a1a',border:'#009999'},
+  {day:'SOBOTA · 01.08',stage:'MAŁA SCENA',id:'specialguest',name:'Special Guest',time:'19:30',color:'#001a1a',border:'#009999'},
+  {day:'SOBOTA · 01.08',stage:'MAŁA SCENA',id:'atmosphere',name:'Atmosphere / Marcin Rozynek',time:'18:25',color:'#001a1a',border:'#009999'},
+  {day:'SOBOTA · 01.08',stage:'MAŁA SCENA',id:'lostinyou',name:'Lost In You',time:'17:30',color:'#001a1a',border:'#009999'},
+];
+
+let currentUser = localStorage.getItem('pr26_user') || '';
+let allData = {};
+let currentTab = 'my';
+let chatMessages = [];
+
+window.login = function() {
+  const name = document.getElementById('name-input').value.trim();
+  if (!name) return;
+  currentUser = name;
+  localStorage.setItem('pr26_user', name);
+  showMain();
+};
+
+window.logout = function() {
+  currentUser = '';
+  localStorage.removeItem('pr26_user');
+  document.getElementById('login-screen').style.display = 'block';
+  document.getElementById('main-screen').style.display = 'none';
+};
+
+function showMain() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('loading-screen').style.display = 'block';
+  document.getElementById('username-display').textContent = currentUser;
+  startListening();
+}
+
+function startListening() {
+  onValue(ref(db, 'attendees'), (snap) => {
+    allData = snap.val() || {};
+    if (!allData[currentUser]) allData[currentUser] = {};
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('main-screen').style.display = 'block';
+    renderMyPlan();
+    renderAll();
+    const now = new Date();
+    document.getElementById('sync-info').textContent =
+      `sync: ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
+  });
+  onValue(ref(db, 'chat'), (snap) => {
+    const data = snap.val() || {};
+    chatMessages = Object.entries(data).map(([key, val]) => ({...val, key})).sort((a,b) => a.ts - b.ts);
+    renderChat();
+  });
+}
+
+window.toggleConcert = async function(id) {
+  if (!allData[currentUser]) allData[currentUser] = {};
+  allData[currentUser][id] = !allData[currentUser][id];
+  await set(ref(db, `attendees/${currentUser}`), allData[currentUser]);
+};
+
+window.sendMsg = async function() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  await push(ref(db, 'chat'), {
+    user: currentUser,
+    text: text,
+    ts: Date.now()
+  });
+};
+
+function renderMyPlan() {
+  const days = [...new Set(CONCERTS.map(c => c.day))];
+  let html = '';
+  for (const day of days) {
+    const stages = [...new Set(CONCERTS.filter(c => c.day === day).map(c => c.stage))];
+    html += `<div class="day-block"><div class="day-label">${day}</div>`;
+    for (const stage of stages) {
+      const cs = CONCERTS.filter(c => c.day === day && c.stage === stage);
+      html += `<div class="stage-label">${stage}</div><div class="concerts">`;
+      for (const c of cs) {
+        const sel = !!(allData[currentUser] && allData[currentUser][c.id]);
+        const att = Object.entries(allData).filter(([u,ids]) => ids && ids[c.id]).map(([u])=>u);
+        const avatars = att.map(u => `<span class="avatar${u===currentUser?' me':''}">${u}</span>`).join('');
+        html += `<div class="concert${sel?' selected':''}" style="background:${c.color};border-color:${sel?'#FF6B00':c.border}" onclick="toggleConcert('${c.id}')">
+          <div class="cname" style="color:${c.border}">${c.name}</div>
+          <div class="ctime">${c.time}</div>
+          ${att.length ? `<div class="attendees">${avatars}</div>` : ''}
+        </div>`;
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+  document.getElementById('concerts-list').innerHTML = html;
+}
+
+const DAYS = ['CZWARTEK · 30.07', 'PIĄTEK · 31.07', 'SOBOTA · 01.08'];
+const MODERATOR = 'Kogut';
+
+function renderAll() {
+  const users = Object.keys(allData);
+  let html = '';
+  for (const user of users) {
+    const ids = allData[user] || {};
+    const selected = CONCERTS.filter(c => ids[c.id]);
+    if (!selected.length) continue;
+    const isMod = user === MODERATOR;
+    let userHtml = `<div class="person-row">
+      <div class="person-name">${user}${isMod ? ' <span style="background:#FF6B00;color:#fff;font-size:9px;padding:1px 5px;border-radius:4px;font-weight:700">MOD</span>' : ''}</div>`;
+    for (const day of DAYS) {
+      const dayConcerts = selected.filter(c => c.day === day);
+      if (!dayConcerts.length) continue;
+      const shortDay = day.split(' · ')[0];
+      userHtml += `<div style="margin-top:5px">
+        <div style="font-size:9px;color:#FF6B00;letter-spacing:2px;margin-bottom:3px">${shortDay}</div>
+        <div class="badges">${dayConcerts.map(c=>`<span class="badge">${c.name} <span style="color:#555">${c.time}</span></span>`).join('')}</div>
+      </div>`;
+    }
+    userHtml += '</div>';
+    html += userHtml;
+  }
+  document.getElementById('all-view').innerHTML = html || '<div class="empty">Nikt jeszcze nie zaznaczył koncertów.</div>';
+}
+
+function renderChat() {
+  if (!chatMessages.length) {
+    document.getElementById('chat-messages').innerHTML = '<div class="empty">Brak wiadomości. Napisz coś!</div>';
+    return;
+  }
+  const el = document.getElementById('chat-messages');
+  const isMod = currentUser === MODERATOR;
+  el.innerHTML = chatMessages.map(m => {
+    const mine = m.user === currentUser;
+    const t = new Date(m.ts);
+    const time = `${t.getHours().toString().padStart(2,'0')}:${t.getMinutes().toString().padStart(2,'0')}`;
+    const deleteBtn = (isMod && !mine) ? `<span onclick="deleteMsg('${m.key}')" style="cursor:pointer;color:#555;font-size:10px;margin-left:6px;padding:1px 5px;border:1px solid #333;border-radius:4px">usuń</span>` : '';
+    return `<div class="msg ${mine?'mine':'others'}" id="msg-${m.key}">
+      <div class="msg-author">${m.user}${m.user===MODERATOR?' <span style="background:#FF6B00;color:#fff;font-size:8px;padding:1px 4px;border-radius:3px">MOD</span>':''}${deleteBtn}</div>
+      <div class="msg-text">${m.text.replace(/</g,'&lt;')}</div>
+      <div class="msg-time">${time}</div>
+    </div>`;
+  }).join('');
+  el.scrollTop = el.scrollHeight;
+}
+
+window.deleteMsg = async function(key) {
+  if (currentUser !== MODERATOR) return;
+  const {remove} = await import("https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js");
+  await remove(ref(db, `chat/${key}`));
+};
+
+window.switchTab = function(tab) {
+  currentTab = tab;
+  ['my','all','chat','map'].forEach((t,i) => {
+    document.getElementById(`tab-${t}`).style.display = t===tab ? 'block' : 'none';
+    document.querySelectorAll('.tab')[i].classList.toggle('active', t===tab);
+  });
+  if (tab === 'chat') {
+    const el = document.getElementById('chat-messages');
+    if (el) el.scrollTop = el.scrollHeight;
+  }
+};
+
+if (currentUser) showMain();
+</script>
+
+<script>
+(function(){
+  const container = document.getElementById('map-container');
+  const img = document.getElementById('map-img');
+  if (!container || !img) return;
+
+  let scale = 1, minScale = 0.3, maxScale = 8;
+  let originX = 0, originY = 0;
+  let isDragging = false, startX, startY, lastX = 0, lastY = 0;
+
+  function clamp(val, min, max){ return Math.min(Math.max(val, min), max); }
+
+  function applyTransform(){
+    img.style.transform = `translate(${originX}px, ${originY}px) scale(${scale})`;
+  }
+
+  function fitImage(){
+    const cw = container.offsetWidth, ch = container.offsetHeight;
+    const iw = img.naturalWidth, ih = img.naturalHeight;
+    if (!iw || !ih || !cw || !ch) return;
+    scale = Math.min(cw/iw, ch/ih);
+    minScale = scale * 0.5;
+    originX = (cw - iw*scale)/2;
+    originY = (ch - ih*scale)/2;
+    applyTransform();
+  }
+
+  if (img.complete && img.naturalWidth) {
+    fitImage();
+  } else {
+    img.onload = fitImage;
+    img.onerror = function(){ img.style.display='none'; document.getElementById('map-container').innerHTML='<div style="color:#555;text-align:center;padding:40px;font-size:13px">Nie można załadować mapy.<br>Sprawdź połączenie i odśwież stronę.</div>'; };
+  }
+  window.addEventListener('resize', fitImage);
+
+  // Mouse wheel zoom
+  container.addEventListener('wheel', function(e){
+    e.preventDefault();
+    const rect = container.getBoundingClientRect();
+    const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+    const delta = e.deltaY < 0 ? 1.15 : 0.87;
+    const newScale = clamp(scale * delta, minScale, maxScale);
+    originX = mx - (mx - originX) * (newScale/scale);
+    originY = my - (my - originY) * (newScale/scale);
+    scale = newScale;
+    applyTransform();
+  }, {passive:false});
+
+  // Mouse drag
+  container.addEventListener('mousedown', function(e){
+    isDragging = true; startX = e.clientX - originX; startY = e.clientY - originY;
+    container.style.cursor = 'grabbing';
+  });
+  window.addEventListener('mousemove', function(e){
+    if (!isDragging) return;
+    originX = e.clientX - startX; originY = e.clientY - startY;
+    applyTransform();
+  });
+  window.addEventListener('mouseup', function(){ isDragging = false; container.style.cursor = 'grab'; });
+
+  // Touch pinch/pan
+  let lastDist = 0, lastTouchX, lastTouchY;
+  container.addEventListener('touchstart', function(e){
+    if (e.touches.length === 1){
+      lastTouchX = e.touches[0].clientX - originX;
+      lastTouchY = e.touches[0].clientY - originY;
+    } else if (e.touches.length === 2){
+      lastDist = Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
+    }
+  }, {passive:true});
+
+  container.addEventListener('touchmove', function(e){
+    e.preventDefault();
+    if (e.touches.length === 1){
+      originX = e.touches[0].clientX - lastTouchX;
+      originY = e.touches[0].clientY - lastTouchY;
+      applyTransform();
+    } else if (e.touches.length === 2){
+      const dist = Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
+      const rect = container.getBoundingClientRect();
+      const mx = (e.touches[0].clientX+e.touches[1].clientX)/2 - rect.left;
+      const my = (e.touches[0].clientY+e.touches[1].clientY)/2 - rect.top;
+      const delta = dist / lastDist;
+      const newScale = clamp(scale * delta, minScale, maxScale);
+      originX = mx - (mx - originX) * (newScale/scale);
+      originY = my - (my - originY) * (newScale/scale);
+      scale = newScale; lastDist = dist;
+      applyTransform();
+    }
+  }, {passive:false});
+})();
+</script>
+</body>
+</html>
