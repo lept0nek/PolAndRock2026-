@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="PR 2026"/>
+<meta name="theme-color" content="#FF6B00"/>
+<meta name="description" content="Pol'and'Rock Festival 2026 - Planer grupowy"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icon-192.png"/>
+<title>Pol'and'Rock 2026</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0f;color:#eee}
+.app-shell{display:flex;flex-direction:column;height:100vh;max-width:900px;margin:0 auto}
+.header{background:#0d0d0d;padding:12px 16px;text-align:center;border-bottom:2px solid #FF6B00;flex-shrink:0}
+.header h1{color:#FF6B00;font-size:20px;letter-spacing:2px;font-weight:700}
+.header p{color:#666;font-size:10px;margin-top:2px;letter-spacing:2px}
+
+/* LOGIN / PENDING */
+.center-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:24px}
+.box{width:100%;max-width:360px;text-align:center}
+.box p{color:#888;font-size:14px;margin-bottom:20px;line-height:1.6}
+input{width:100%;background:#161616;border:1.5px solid #2a2a2a;color:#eee;border-radius:12px;padding:13px 16px;font-size:16px;outline:none}
+input:focus{border-color:#FF6B00}
+.btn-main{margin-top:12px;width:100%;background:#FF6B00;color:#fff;border:none;border-radius:12px;padding:13px;font-size:16px;font-weight:700;cursor:pointer}
+.btn-main:hover{background:#e05a00}
+.pending-icon{font-size:48px;margin-bottom:16px}
+.pending-title{color:#FF6B00;font-size:18px;font-weight:700;margin-bottom:8px}
+.pending-sub{color:#666;font-size:13px;line-height:1.6}
+
+/* USER BAR */
+.user-bar{background:#111;padding:9px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:1px solid #1a1a1a}
+.uname{color:#FF6B00;font-weight:700;font-size:14px}
+.btn-sm{background:transparent;border:1px solid #333;color:#777;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer}
+.btn-sm:hover{border-color:#555;color:#aaa}
+
+/* TABS */
+.desktop-tabs{display:flex;border-bottom:1px solid #1a1a1a;flex-shrink:0;background:#0d0d0d}
+.desktop-tab{flex:1;padding:12px 8px;text-align:center;cursor:pointer;color:#555;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:all 0.15s}
+.desktop-tab:hover{color:#888}
+.desktop-tab.active{color:#FF6B00;border-bottom-color:#FF6B00}
+@media(max-width:600px){.desktop-tabs{display:none}}
+.mobile-nav{display:none;background:#0d0d0d;border-top:1px solid #1a1a1a;flex-shrink:0;padding-bottom:env(safe-area-inset-bottom)}
+@media(max-width:600px){.mobile-nav{display:flex}}
+.nav-btn{flex:1;padding:10px 4px 8px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;border:none;background:transparent;color:#555;font-size:10px;font-family:inherit}
+.nav-btn.active{color:#FF6B00}
+.nav-btn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* CONTENT */
+.tab-content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px}
+.tab-content.no-pad{padding:0;display:flex;flex-direction:column}
+
+/* CONCERTS */
+.day-block{margin-bottom:22px}
+.day-label{color:#FF6B00;font-size:10px;letter-spacing:3px;font-weight:700;padding:7px 12px;background:#1a0800;border-radius:8px;text-align:center;margin-bottom:10px}
+.stage-label{color:#444;font-size:9px;letter-spacing:2px;margin:10px 0 6px 2px;font-weight:600}
+.concerts{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.concert{border-radius:10px;padding:10px 12px;cursor:pointer;border:1.5px solid transparent;transition:all 0.1s}
+.concert:hover{opacity:0.85}
+.concert.selected{border-color:#FF6B00!important;box-shadow:0 0 0 1px #FF6B0033}
+.cname{font-size:12px;font-weight:700;line-height:1.3}
+.ctime{font-size:11px;margin-top:3px;opacity:0.5}
+.attendees{margin-top:6px;display:flex;flex-wrap:wrap;gap:3px}
+.av{font-size:9px;padding:2px 6px;border-radius:8px;background:#FF6B0018;color:#FF6B00;border:1px solid #FF6B0033;font-weight:600}
+.av.me{background:#FF6B0033;border-color:#FF6B00}
+
+/* WSZYSCY */
+.person-card{background:#111;border-radius:12px;padding:14px;margin-bottom:10px}
+.person-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.person-name{color:#FF6B00;font-weight:700;font-size:15px}
+.mod-badge{background:#FF6B00;color:#fff;font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700}
+.day-group{margin-bottom:8px}
+.day-group-label{font-size:9px;color:#555;letter-spacing:2px;font-weight:700;margin-bottom:5px}
+.badges{display:flex;flex-wrap:wrap;gap:5px}
+.badge{font-size:11px;padding:4px 9px;border-radius:8px;background:#1a1a1a;color:#bbb;border:1px solid #222}
+.badge span{color:#555}
+.kick-btn{margin-left:auto;background:transparent;border:1px solid #cc333355;color:#cc3333;border-radius:8px;padding:4px 10px;font-size:11px;cursor:pointer}
+.kick-btn:hover{background:#cc333322}
+
+/* CZAT */
+.chat-outer{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.chat-messages{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px;display:flex;flex-direction:column;gap:10px}
+.msg-wrap{display:flex;flex-direction:column}
+.msg-wrap.mine{align-items:flex-end}
+.msg-wrap.others{align-items:flex-start}
+.msg{max-width:75%;padding:9px 13px;border-radius:16px;cursor:pointer}
+@media(max-width:600px){.msg{max-width:88%}}
+.msg-wrap.mine .msg{background:#1a0d00;border:1px solid #e85d0433;border-bottom-right-radius:4px}
+.msg-wrap.others .msg{background:#161622;border:1px solid #33333355;border-bottom-left-radius:4px}
+.msg:hover .msg-actions{opacity:1}
+.msg-author{font-size:10px;font-weight:700;color:#FF6B00;margin-bottom:3px}
+.msg-wrap.others .msg-author{color:#8888ff}
+.reply-preview{background:#0a0a1a;border-left:3px solid #FF6B00;border-radius:6px;padding:5px 8px;margin-bottom:6px;font-size:11px;color:#888;cursor:pointer}
+.reply-preview.or{border-left-color:#8888ff}
+.reply-preview strong{color:#FF6B00;font-size:10px;display:block;margin-bottom:2px}
+.reply-preview.or strong{color:#8888ff}
+.msg-text{font-size:13px;color:#ddd;line-height:1.5;word-break:break-word;white-space:pre-wrap}
+.msg-footer{display:flex;align-items:center;gap:8px;margin-top:5px}
+.msg-time{font-size:9px;color:#444}
+.msg-actions{display:flex;gap:4px;opacity:0;transition:opacity 0.15s}
+@media(max-width:600px){.msg-actions{opacity:1}}
+.action-btn{font-size:10px;color:#555;padding:2px 7px;border:1px solid #2a2a2a;border-radius:6px;cursor:pointer;background:transparent}
+.action-btn:hover{color:#aaa;border-color:#444}
+.action-btn.red{color:#cc4444}
+.reply-bar{background:#111;border-top:1px solid #1a1a1a;padding:8px 14px;display:flex;align-items:center;gap:8px}
+.reply-bar-inner{flex:1;font-size:12px;color:#888;border-left:3px solid #FF6B00;padding-left:8px}
+.reply-bar-inner strong{color:#FF6B00;display:block;font-size:11px}
+.reply-bar-cancel{color:#555;cursor:pointer;font-size:20px;padding:4px;line-height:1}
+.reply-bar-cancel:hover{color:#aaa}
+.chat-input-area{padding:10px 14px;padding-bottom:max(10px,env(safe-area-inset-bottom));background:#0d0d0d;border-top:1px solid #1a1a1a;display:flex;gap:8px;align-items:flex-end;flex-shrink:0}
+.chat-input-area input{flex:1;margin:0;padding:11px 14px;border-radius:22px;font-size:15px}
+.send-btn{background:#FF6B00;color:#fff;border:none;border-radius:50%;width:44px;height:44px;min-width:44px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.send-btn:hover{background:#e05a00}
+.send-btn svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+
+/* MAPA */
+.map-outer{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.map-header{padding:10px 14px;color:#FF6B00;font-size:11px;font-weight:700;letter-spacing:1px;border-bottom:1px solid #1a1a1a;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.map-hint{color:#444;font-size:10px;font-weight:400}
+#map-container{flex:1;overflow:hidden;position:relative;cursor:grab;background:#1a1f0a;touch-action:none}
+#map-img{position:absolute;top:0;left:0;transform-origin:0 0;user-select:none;-webkit-user-drag:none;will-change:transform;max-width:none}
+.map-pins{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
+.map-pin{position:absolute;transform:translate(-50%,-100%);display:flex;flex-direction:column;align-items:center;pointer-events:auto;cursor:pointer}
+.pin-dot{width:12px;height:12px;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.6)}
+.pin-label{background:#000000cc;color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:4px;margin-bottom:3px;white-space:nowrap}
+.map-controls{padding:8px 14px;display:flex;flex-wrap:wrap;gap:10px;border-top:1px solid #1a1a1a;flex-shrink:0;align-items:center}
+.map-legend{display:flex;flex-wrap:wrap;gap:10px;flex:1}
+.legend-item{display:flex;align-items:center;gap:4px;font-size:10px;color:#888}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.gps-btn{background:#1a2a1a;border:1px solid #3a7d00;color:#7ecb35;border-radius:8px;padding:6px 12px;font-size:11px;cursor:pointer;white-space:nowrap}
+.gps-btn.active{background:#0a1a0a;border-color:#7ecb35;color:#aaffaa}
+.gps-btn:hover{border-color:#7ecb35}
+
+/* MOD PANEL */
+.mod-section{background:#111;border-radius:12px;padding:14px;margin-bottom:12px}
+.mod-title{color:#FF6B00;font-size:12px;font-weight:700;letter-spacing:2px;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.pending-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #1a1a1a}
+.pending-item:last-child{border-bottom:none}
+.pending-name{font-size:14px;font-weight:600;color:#eee}
+.pending-actions{display:flex;gap:6px}
+.accept-btn{background:#1a3a1a;border:1px solid #3a7d00;color:#7ecb35;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-weight:600}
+.accept-btn:hover{background:#2a4a2a}
+.reject-btn{background:#2a1a1a;border:1px solid #7d3a3a;color:#cc6666;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-weight:600}
+.reject-btn:hover{background:#3a2a2a}
+.user-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #1a1a1a}
+.user-item:last-child{border-bottom:none}
+.user-info{display:flex;align-items:center;gap:8px}
+.online-dot{width:8px;height:8px;border-radius:50%;background:#3a7d00}
+
+/* UTILS */
+.empty{text-align:center;color:#444;padding:32px 20px;font-size:13px;line-height:1.7}
+.spinner{width:28px;height:28px;border:2px solid #222;border-top-color:#FF6B00;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-full{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#555;font-size:13px}
+</style>
+</head>
+<body>
+<div class="app-shell" id="app">
+
+<!-- LOGIN -->
+<div id="login-screen" style="display:flex;flex-direction:column;flex:1">
+  <div class="header"><h1>POL'AND'ROCK 2026</h1><p>30.07 – 01.08 · CZAPLINEK</p></div>
+  <div class="center-wrap">
+
+    <!-- PANEL LOGOWANIA -->
+    <div class="box" id="panel-login">
+      <div style="font-size:32px;margin-bottom:12px">🤘</div>
+      <div style="color:#FF6B00;font-size:18px;font-weight:700;margin-bottom:6px">Zaloguj się</div>
+      <p>Wpisz swoje imię i hasło żeby wejść</p>
+      <input id="login-name" placeholder="Twoje imię..." maxlength="20" style="margin-top:16px" onkeydown="if(event.key==='Enter')document.getElementById('login-pass').focus()"/>
+      <input id="login-pass" type="password" placeholder="Hasło..." maxlength="50" style="margin-top:8px" onkeydown="if(event.key==='Enter')window.doLogin()"/>
+      <div id="login-error" style="color:#cc4444;font-size:12px;margin-top:6px;min-height:18px"></div>
+      <button class="btn-main" onclick="window.doLogin()">Zaloguj się</button>
+      <div style="margin-top:20px;padding-top:20px;border-top:1px solid #1a1a1a">
+        <div style="color:#555;font-size:13px;margin-bottom:12px">Jesteś tu pierwszy raz?</div>
+        <button onclick="window.showRegister()" style="width:100%;background:transparent;border:1px solid #FF6B00;color:#FF6B00;border-radius:12px;padding:12px;font-size:14px;font-weight:600;cursor:pointer">Ustaw nazwę użytkownika i hasło</button>
+      </div>
+    </div>
+
+    <!-- PANEL REJESTRACJI -->
+    <div class="box" id="panel-register" style="display:none">
+      <div style="font-size:32px;margin-bottom:12px">👋</div>
+      <div style="color:#FF6B00;font-size:18px;font-weight:700;margin-bottom:6px">Pierwsze logowanie</div>
+      <p>Wybierz swoją nazwę i ustaw hasło.<br>Moderator musi Cię zaakceptować.</p>
+      <input id="reg-name" placeholder="Twoja nazwa (imię)..." maxlength="20" style="margin-top:16px" onkeydown="if(event.key==='Enter')document.getElementById('reg-pass').focus()"/>
+      <input id="reg-pass" type="password" placeholder="Ustaw hasło..." maxlength="50" style="margin-top:8px" onkeydown="if(event.key==='Enter')document.getElementById('reg-pass2').focus()"/>
+      <input id="reg-pass2" type="password" placeholder="Powtórz hasło..." maxlength="50" style="margin-top:8px" onkeydown="if(event.key==='Enter')window.doRegister()"/>
+      <div id="register-error" style="color:#cc4444;font-size:12px;margin-top:6px;min-height:18px"></div>
+      <button class="btn-main" onclick="window.doRegister()">Wyślij prośbę o dołączenie</button>
+      <button onclick="window.showLogin()" style="width:100%;background:transparent;border:none;color:#555;font-size:13px;margin-top:12px;padding:8px;cursor:pointer">← Mam już konto, zaloguj mnie</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- PENDING -->
+<div id="pending-screen" style="display:none;flex-direction:column;flex:1">
+  <div class="header"><h1>POL'AND'ROCK 2026</h1><p>30.07 – 01.08 · CZAPLINEK</p></div>
+  <div class="center-wrap">
+    <div class="box">
+      <div class="pending-icon">⏳</div>
+      <div class="pending-title">Czekasz na akceptację</div>
+      <div class="pending-sub">Twoja prośba o dołączenie została wysłana.<br>Moderator musi Cię zaakceptować.<br><br><span id="pending-name-display" style="color:#FF6B00;font-weight:700"></span></div>
+      <button class="btn-main" style="margin-top:24px;background:#333" onclick="cancelRequest()">Anuluj i wróć</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div id="loading-screen" style="display:none;flex-direction:column;flex:1">
+  <div class="header"><h1>POL'AND'ROCK 2026</h1><p>30.07 – 01.08 · CZAPLINEK</p></div>
+  <div class="loading-full"><div class="spinner"></div>Łączenie...</div>
+</div>
+
+<!-- MAIN -->
+<div id="main-screen" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+  <div class="header"><h1>POL'AND'ROCK 2026</h1><p>30.07 – 01.08 · CZAPLINEK</p></div>
+  <div class="user-bar">
+    <span class="uname" id="username-display"></span>
+    <button class="btn-sm" onclick="logout()">Wyloguj</button>
+  </div>
+  <div class="desktop-tabs">
+    <div class="desktop-tab active" onclick="switchTab('my')" id="dtab-my">📅 Mój plan</div>
+    <div class="desktop-tab" onclick="switchTab('all')" id="dtab-all">👥 Wszyscy</div>
+    <div class="desktop-tab" onclick="switchTab('chat')" id="dtab-chat">💬 Czat</div>
+    <div class="desktop-tab" onclick="switchTab('map')" id="dtab-map">🗺️ Mapa</div>
+    <div class="desktop-tab" onclick="switchTab('mod')" id="dtab-mod" style="display:none">🛡️ Panel MOD</div>
+    <div class="desktop-tab" onclick="switchTab('photos')" id="dtab-photos">📸 Zdjęcia</div>
+  </div>
+
+  <div id="tab-my" class="tab-content"><div id="concerts-list"></div></div>
+  <div id="tab-all" class="tab-content" style="display:none"><div id="all-view"></div></div>
+
+  <div id="tab-chat" class="tab-content no-pad" style="display:none">
+    <div class="chat-outer">
+      <div class="chat-messages" id="chat-messages"><div class="empty">Brak wiadomości. Napisz coś! 👋</div></div>
+      <div id="reply-bar" style="display:none" class="reply-bar">
+        <div class="reply-bar-inner"><strong id="reply-author"></strong><span id="reply-text-preview"></span></div>
+        <span class="reply-bar-cancel" onclick="cancelReply()">✕</span>
+      </div>
+      <div class="chat-input-area">
+        <input id="chat-input" placeholder="Napisz wiadomość..." maxlength="500" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}"/>
+        <button class="send-btn" onclick="sendMsg()"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-map" class="tab-content no-pad" style="display:none">
+    <div class="map-outer">
+      <!-- SUB-TABS MAPY -->
+      <div style="display:flex;background:#0d0d0d;border-bottom:1px solid #1a1a1a;flex-shrink:0">
+        <div id="msubtab-festival" onclick="window.switchMapTab('festival')" style="flex:1;padding:10px;text-align:center;font-size:12px;font-weight:600;cursor:pointer;color:#FF6B00;border-bottom:2px solid #FF6B00">🗺️ Mapa terenu</div>
+        <div id="msubtab-google" onclick="window.switchMapTab('google')" style="flex:1;padding:10px;text-align:center;font-size:12px;font-weight:600;cursor:pointer;color:#555;border-bottom:2px solid transparent">🌍 Google Maps</div>
+      </div>
+
+      <!-- MAPA TERENU FESTIWALU -->
+      <div id="map-festival" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+        <div style="padding:8px 14px;border-bottom:1px solid #1a1a1a;display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap">
+          <button id="pin-mode-temp" onclick="window.setPinMode('temp')" style="background:#1a0800;border:1.5px solid #FF6B00;color:#FF6B00;border-radius:8px;padding:5px 10px;font-size:11px;cursor:pointer;font-weight:600">⏱ 15 min</button>
+          <button id="pin-mode-perm" onclick="window.setPinMode('perm')" style="background:transparent;border:1.5px solid #333;color:#555;border-radius:8px;padding:5px 10px;font-size:11px;cursor:pointer;font-weight:600">📌 Stały</button>
+          <span style="font-size:10px;color:#444;margin-left:4px">kliknij mapę żeby dodać</span>
+        </div>
+        <div id="map-container" style="flex:1;overflow:hidden;position:relative;cursor:crosshair;background:#1a1f0a;touch-action:none">
+          <img id="map-img" src="https://lept0nek.github.io/PolAndRock2026-/mapka.jpg" draggable="false" style="position:absolute;top:0;left:0;transform-origin:0 0;user-select:none;-webkit-user-drag:none;will-change:transform;max-width:none"/>
+          <div id="map-pins-layer" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none"></div>
+        </div>
+        <div style="border-top:1px solid #1a1a1a;flex-shrink:0">
+          <!-- Lista pinezek -->
+          <div id="pins-list" style="max-height:120px;overflow-y:auto;padding:6px 10px;display:flex;flex-direction:column;gap:4px"></div>
+          <!-- Legenda -->
+          <div style="padding:6px 14px;display:flex;flex-wrap:wrap;gap:8px;border-top:1px solid #111;align-items:center">
+            <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:#555"><div style="width:8px;height:8px;border-radius:50%;background:#FF6B00"></div>Main Stage</div>
+            <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:#555"><div style="width:8px;height:8px;border-radius:50%;background:#00ccff"></div>Second Stage</div>
+            <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:#555"><div style="width:8px;height:8px;border-radius:50%;background:#44cc44"></div>Rock Camp</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GOOGLE MAPS -->
+      <div id="map-google" style="flex:1;display:none;flex-direction:column;overflow:hidden">
+        <div style="padding:12px 14px;border-bottom:1px solid #1a1a1a;flex-shrink:0">
+          <div style="font-size:12px;color:#888;margin-bottom:10px">Udostępnij swoją lokalizację GPS znajomym na żywo</div>
+          <button id="gps-btn" onclick="toggleGPS()" style="background:#1a2a1a;border:1px solid #3a7d00;color:#7ecb35;border-radius:10px;padding:10px 16px;font-size:13px;cursor:pointer;width:100%;font-weight:600">📍 Udostępnij lokalizację GPS</button>
+          <div id="gps-status" style="font-size:11px;color:#555;margin-top:6px;text-align:center"></div>
+        </div>
+        <div style="flex:1;position:relative;overflow:hidden">
+          <iframe id="google-map-frame"
+            src="https://maps.google.com/maps?q=Czaplinek,+Poland&z=14&output=embed"
+            style="width:100%;height:100%;border:none"
+            allowfullscreen
+            loading="lazy">
+          </iframe>
+          <div id="gps-users-overlay" style="position:absolute;bottom:8px;left:8px;right:8px;pointer-events:none"></div>
+        </div>
+        <div style="padding:8px 14px;border-top:1px solid #1a1a1a;flex-shrink:0">
+          <div style="font-size:10px;color:#444;margin-bottom:6px">Aktywne lokalizacje:</div>
+          <div id="gps-active-users" style="display:flex;flex-wrap:wrap;gap:6px"><div style="font-size:11px;color:#333">Brak aktywnych lokalizacji</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-mod" class="tab-content" style="display:none">
+    <div class="mod-section">
+      <div class="mod-title">⏳ Oczekujące prośby</div>
+      <div id="pending-list"><div class="empty">Brak oczekujących próśb</div></div>
+    </div>
+    <div class="mod-section">
+      <div class="mod-title">👥 Zaakceptowani użytkownicy</div>
+      <div style="color:#555;font-size:11px;margin-bottom:10px">Każdy użytkownik loguje się swoim imieniem i hasłem. Hasło jest ustawiane przy pierwszym logowaniu.</div>
+      <div id="users-list"></div>
+    </div>
+  </div>
+
+  <div id="tab-photos" class="tab-content" style="display:none">
+    <div style="text-align:center;padding:32px 20px">
+      <div style="font-size:48px;margin-bottom:16px">📸</div>
+      <div style="color:#FF6B00;font-size:18px;font-weight:700;margin-bottom:10px">Wspólny album zdjęć</div>
+      <div style="color:#888;font-size:13px;line-height:1.7;margin-bottom:24px">Tutaj znajdziesz wszystkie zdjęcia z festiwalu.<br>Możesz też dodawać własne!</div>
+      <a href="https://drive.google.com/drive/folders/1QyMtUF2j14NmMhd4n86tMLk0fH0U-uxP?usp=sharing" target="_blank" style="display:inline-block;background:#FF6B00;color:#fff;border-radius:12px;padding:14px 28px;font-size:15px;font-weight:700;text-decoration:none;margin-bottom:12px">Otwórz album Google Drive</a>
+      <div style="color:#444;font-size:11px;margin-top:8px">Otwiera się w Google Drive</div>
+    </div>
+  </div>
+
+  <nav class="mobile-nav">
+    <button class="nav-btn active" onclick="switchTab('my')" id="nav-my">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Plan
+    </button>
+    <button class="nav-btn" onclick="switchTab('all')" id="nav-all">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Wszyscy
+    </button>
+    <button class="nav-btn" onclick="switchTab('chat')" id="nav-chat">
+      <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Czat
+    </button>
+    <button class="nav-btn" onclick="switchTab('map')" id="nav-map">
+      <svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>Mapa
+    </button>
+    <button class="nav-btn" onclick="switchTab('mod')" id="nav-mod" style="display:none">
+      <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>MOD
+    </button>
+    <button class="nav-btn" onclick="switchTab('photos')" id="nav-photos">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Zdjęcia
+    </button>
+  </nav>
+</div>
+
+</div>
+
+<!-- MODAL: opis stałej pinezki -->
+<div id="pin-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#000000aa;z-index:1000;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#111;border-radius:16px;padding:24px;width:100%;max-width:360px;border:1px solid #333">
+    <div style="color:#00cccc;font-size:16px;font-weight:700;margin-bottom:6px">📌 Stały punkt</div>
+    <div style="color:#888;font-size:13px;margin-bottom:16px">Wpisz opis tego miejsca (np. "Namioty", "Spotkajmy się tu")</div>
+    <input id="pin-label-input" placeholder="Opis punktu..." maxlength="40"
+      style="width:100%;background:#1a1a1a;border:1.5px solid #333;color:#eee;border-radius:10px;padding:12px;font-size:15px;outline:none;margin-bottom:12px"
+      onkeydown="if(event.key==='Enter') window.savePermanentPin()"
+      onfocus="this.style.borderColor='#00cccc'" onblur="this.style.borderColor='#333'"/>
+    <div style="display:flex;gap:8px">
+      <button onclick="window.closePinModal()" style="flex:1;background:transparent;border:1px solid #333;color:#666;border-radius:10px;padding:11px;font-size:14px;cursor:pointer">Anuluj</button>
+      <button onclick="window.savePermanentPin()" style="flex:2;background:#00cccc;color:#000;border:none;border-radius:10px;padding:11px;font-size:14px;font-weight:700;cursor:pointer">Zapisz punkt</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+import { getDatabase, ref, set, push, remove, onValue, get } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDntl7g95YVT3j1mIZvNAK31CMFm8smDLw",
+  authDomain: "polandrock-2026.firebaseapp.com",
+  databaseURL: "https://polandrock-2026-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "polandrock-2026",
+  storageBucket: "polandrock-2026.firebasestorage.app",
+  messagingSenderId: "2937493039",
+  appId: "1:2937493039:web:f01c9ddec0f046ebe1d8da"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const MODERATOR = 'Kogut';
+const DAYS = ['CZWARTEK · 30.07','PIĄTEK · 31.07','SOBOTA · 01.08'];
+
+const ASP = [
+  {day:'CZWARTEK · 30.07',id:'asp_figiel',name:'Marzena Figiel-Strzała',time:'09:00',color:'#1a1400',border:'#bb8800'},
+  {day:'CZWARTEK · 30.07',id:'asp_dziedziel',name:'Marian Dziędziel',time:'11:00',color:'#1a1400',border:'#bb8800'},
+  {day:'CZWARTEK · 30.07',id:'asp_kulesza',name:'Agata Kulesza',time:'13:00',color:'#1a1400',border:'#bb8800'},
+  {day:'PIĄTEK · 31.07',id:'asp_szeremeta',name:'Julia Szeremeta',time:'09:00',color:'#1a1400',border:'#bb8800'},
+  {day:'PIĄTEK · 31.07',id:'asp_dajnowski',name:'Bartek Dajnowski',time:'11:00',color:'#1a1400',border:'#bb8800'},
+  {day:'PIĄTEK · 31.07',id:'asp_wit',name:'Radomir Wit',time:'13:00',color:'#1a1400',border:'#bb8800'},
+  {day:'SOBOTA · 01.08',id:'asp_machulski',name:'Juliusz Machulski',time:'09:00',color:'#1a1400',border:'#bb8800'},
+  {day:'SOBOTA · 01.08',id:'asp_zborowska',name:'Zosia Zborowska-Wrona i Andrzej Wrona',time:'11:00',color:'#1a1400',border:'#bb8800'},
+  {day:'SOBOTA · 01.08',id:'asp_uznanski',name:'Sławosz Uznański-Wiśniewski',time:'13:00',color:'#1a1400',border:'#bb8800'},
+];
+const PIN_COLORS = ['#FF6B00','#00ccff','#ff66ff','#7ecb35','#ffcc44','#ff4444','#44ffcc','#ffaa00','#aa44ff','#44aaff'];
+
+const CONCERTS = [
+  {day:'CZWARTEK · 30.07',stage:'DUŻA SCENA',id:'myslovitz',name:'Myslovitz',time:'00:10',color:'#0a0a2a',border:'#5050cc'},
+  {day:'CZWARTEK · 30.07',stage:'DUŻA SCENA',id:'godsmack',name:'Godsmack',time:'22:40',color:'#1a0a00',border:'#e85d04'},
+  {day:'CZWARTEK · 30.07',stage:'DUŻA SCENA',id:'dropkick',name:'Dropkick Murphys',time:'21:00',color:'#0a1a00',border:'#3a7d00'},
+  {day:'CZWARTEK · 30.07',stage:'DUŻA SCENA',id:'orbit',name:'Orbit Culture',time:'19:30',color:'#1a0a00',border:'#e85d04'},
+  {day:'CZWARTEK · 30.07',stage:'DUŻA SCENA',id:'luc',name:'L.U.C. i Rebel Babel Orchestra',time:'18:00',color:'#0a0a2a',border:'#5050cc'},
+  {day:'CZWARTEK · 30.07',stage:'DUŻA SCENA',id:'vended',name:'Vended',time:'16:30',color:'#1a0a00',border:'#e85d04'},
+  {day:'CZWARTEK · 30.07',stage:'DUŻA SCENA',id:'lottery',name:'The Lottery Winners',time:'15:10',color:'#1a0a00',border:'#e85d04'},
+  {day:'CZWARTEK · 30.07',stage:'MAŁA SCENA',id:'variusmanx',name:'Varius Manx + K. Stankiewicz',time:'22:45',color:'#001a1a',border:'#009999'},
+  {day:'CZWARTEK · 30.07',stage:'MAŁA SCENA',id:'jucho',name:'Jucho',time:'21:40',color:'#001a1a',border:'#009999'},
+  {day:'CZWARTEK · 30.07',stage:'MAŁA SCENA',id:'lipali',name:'Lipali',time:'20:25',color:'#001a1a',border:'#009999'},
+  {day:'CZWARTEK · 30.07',stage:'MAŁA SCENA',id:'lejmipol',name:'Lej mi Pół',time:'19:30',color:'#001a1a',border:'#009999'},
+  {day:'CZWARTEK · 30.07',stage:'MAŁA SCENA',id:'wiraszko',name:'Wiraszko',time:'18:25',color:'#001a1a',border:'#009999'},
+  {day:'CZWARTEK · 30.07',stage:'MAŁA SCENA',id:'trackstone',name:'Trackstone',time:'17:30',color:'#001a1a',border:'#009999'},
+  {day:'PIĄTEK · 31.07',stage:'DUŻA SCENA',id:'pod',name:'P.O.D.',time:'00:10',color:'#1a0a00',border:'#e85d04'},
+  {day:'PIĄTEK · 31.07',stage:'DUŻA SCENA',id:'nocny',name:'Nocny Kochanek',time:'22:30',color:'#1a001a',border:'#cc00cc'},
+  {day:'PIĄTEK · 31.07',stage:'DUŻA SCENA',id:'alborosie',name:'Alborosie & The Shengen Clan',time:'21:00',color:'#001a00',border:'#3a7d00'},
+  {day:'PIĄTEK · 31.07',stage:'DUŻA SCENA',id:'dzem',name:'Dżem',time:'19:30',color:'#1a0a00',border:'#e85d04'},
+  {day:'PIĄTEK · 31.07',stage:'DUŻA SCENA',id:'spidergawd',name:'Spidergawd',time:'18:00',color:'#1a0a00',border:'#e85d04'},
+  {day:'PIĄTEK · 31.07',stage:'DUŻA SCENA',id:'dziwna',name:'Dziwna Wiosna',time:'16:30',color:'#0a0a2a',border:'#5050cc'},
+  {day:'PIĄTEK · 31.07',stage:'DUŻA SCENA',id:'bumbum',name:'Bum Bum Orkestar & Friends',time:'15:00',color:'#0a0a2a',border:'#5050cc'},
+  {day:'PIĄTEK · 31.07',stage:'MAŁA SCENA',id:'lzy',name:'Łzy',time:'00:10',color:'#001a1a',border:'#009999'},
+  {day:'PIĄTEK · 31.07',stage:'MAŁA SCENA',id:'kasialins',name:'Kasia Lins "Obyw. K.L."',time:'23:25',color:'#001a1a',border:'#009999'},
+  {day:'PIĄTEK · 31.07',stage:'MAŁA SCENA',id:'dariaslasko',name:'Daria ze Śląska',time:'21:55',color:'#001a1a',border:'#009999'},
+  {day:'PIĄTEK · 31.07',stage:'MAŁA SCENA',id:'kobranocka',name:'Kobranocka',time:'20:25',color:'#001a1a',border:'#009999'},
+  {day:'PIĄTEK · 31.07',stage:'MAŁA SCENA',id:'meteor',name:'Meteor Airlines',time:'19:20',color:'#001a1a',border:'#009999'},
+  {day:'PIĄTEK · 31.07',stage:'MAŁA SCENA',id:'adhd',name:'ADHD',time:'18:25',color:'#001a1a',border:'#009999'},
+  {day:'PIĄTEK · 31.07',stage:'MAŁA SCENA',id:'zuta',name:'Zuta',time:'17:30',color:'#001a1a',border:'#009999'},
+  {day:'SOBOTA · 01.08',stage:'DUŻA SCENA',id:'bukartyk',name:'Bukartyk & Ajagore',time:'01:30',color:'#1a1000',border:'#cc8800'},
+  {day:'SOBOTA · 01.08',stage:'DUŻA SCENA',id:'happysad',name:'Happysad',time:'00:00',color:'#001a00',border:'#3a7d00'},
+  {day:'SOBOTA · 01.08',stage:'DUŻA SCENA',id:'eagleeye',name:'Eagle Eye Cherry',time:'22:30',color:'#1a1000',border:'#cc8800'},
+  {day:'SOBOTA · 01.08',stage:'DUŻA SCENA',id:'kosheen',name:'Kosheen',time:'21:00',color:'#1a001a',border:'#cc00cc'},
+  {day:'SOBOTA · 01.08',stage:'DUŻA SCENA',id:'wargasm',name:'Wargasm',time:'19:30',color:'#1a0a00',border:'#e85d04'},
+  {day:'SOBOTA · 01.08',stage:'DUŻA SCENA',id:'malevolence',name:'Malevolence',time:'18:00',color:'#1a0a00',border:'#e85d04'},
+  {day:'SOBOTA · 01.08',stage:'DUŻA SCENA',id:'helenine',name:'Heľenine oči',time:'16:30',color:'#0a0a2a',border:'#5050cc'},
+  {day:'SOBOTA · 01.08',stage:'DUŻA SCENA',id:'orkiestra',name:'Orkiestra Dorosłych Dzieci',time:'15:00',color:'#0a0a2a',border:'#5050cc'},
+  {day:'SOBOTA · 01.08',stage:'MAŁA SCENA',id:'walus',name:'Waluśkraksakryzys',time:'23:20',color:'#001a1a',border:'#009999'},
+  {day:'SOBOTA · 01.08',stage:'MAŁA SCENA',id:'trupatrupa',name:'Trupa Trupa',time:'21:55',color:'#001a1a',border:'#009999'},
+  {day:'SOBOTA · 01.08',stage:'MAŁA SCENA',id:'ewelinaflinta',name:'Ewelina Flinta',time:'20:35',color:'#001a1a',border:'#009999'},
+  {day:'SOBOTA · 01.08',stage:'MAŁA SCENA',id:'specialguest',name:'Special Guest',time:'19:30',color:'#001a1a',border:'#009999'},
+  {day:'SOBOTA · 01.08',stage:'MAŁA SCENA',id:'atmosphere',name:'Atmosphere / Marcin Rozynek',time:'18:25',color:'#001a1a',border:'#009999'},
+  {day:'SOBOTA · 01.08',stage:'MAŁA SCENA',id:'lostinyou',name:'Lost In You',time:'17:30',color:'#001a1a',border:'#009999'},
+];
+
+let currentUser = localStorage.getItem('pr26_user') || '';
+let userStatus = localStorage.getItem('pr26_status') || ''; // 'pending' | 'accepted'
+let allData={}, chatMessages=[], currentTab='my', replyTo=null;
+let gpsActive=false, gpsWatchId=null;
+let locations={}, pins={};
+let userColors={};
+
+function getColor(user){
+  if(!userColors[user]){
+    const keys=Object.keys(userColors);
+    userColors[user]=PIN_COLORS[keys.length % PIN_COLORS.length];
+  }
+  return userColors[user];
+}
+
+// --- AUTH FLOW ---
+// Hash hasła SHA-256
+async function hashPassword(pass){
+  const enc = new TextEncoder();
+  const buf = await crypto.subtle.digest('SHA-256', enc.encode(pass));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+// Przełączanie paneli
+window.showRegister = function(){
+  document.getElementById('panel-login').style.display='none';
+  document.getElementById('panel-register').style.display='block';
+  document.getElementById('reg-name').focus();
+};
+window.showLogin = function(){
+  document.getElementById('panel-register').style.display='none';
+  document.getElementById('panel-login').style.display='block';
+  document.getElementById('login-name').focus();
+};
+
+// LOGOWANIE — istniejący użytkownik
+window.doLogin = async function(){
+  const name = document.getElementById('login-name').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  const errEl = document.getElementById('login-error');
+  errEl.textContent='';
+
+  if (!name){ errEl.textContent='Wpisz imię'; return; }
+  if (!pass){ errEl.textContent='Wpisz hasło'; return; }
+
+  const passHash = await hashPassword(pass);
+
+  // Moderator
+  if (name === MODERATOR){
+    const _a='054f90c67beac25b82cadf',_b='aa6c403b30b7c0351bc9d0',_c='7284b22b59463dd6d175';
+    const MOD_PASS_HASH=_a+_b+_c;
+    if (passHash !== MOD_PASS_HASH){
+      errEl.textContent='Nieprawidłowe hasło';
+      return;
+    }
+    currentUser = name; userStatus = 'accepted';
+    localStorage.setItem('pr26_user', name);
+    localStorage.setItem('pr26_status', 'accepted');
+    await set(ref(db,'users/Kogut'), {status:'accepted', passHash:MOD_PASS_HASH, ts:Date.now()});
+    showMain();
+    return;
+  }
+
+  // Sprawdź w bazie
+  const snap = await get(ref(db,`users/${name}`));
+  if (!snap.exists()){
+    errEl.textContent='Nie znaleziono użytkownika. Zarejestruj się najpierw.';
+    return;
+  }
+  const stored = snap.val();
+  if (stored.passHash && stored.passHash !== passHash){
+    errEl.textContent='Nieprawidłowe hasło';
+    return;
+  }
+  if (stored.status === 'accepted'){
+    currentUser = name; userStatus = 'accepted';
+    localStorage.setItem('pr26_user', name);
+    localStorage.setItem('pr26_status', 'accepted');
+    showMain();
+  } else {
+    currentUser = name; userStatus = 'pending';
+    localStorage.setItem('pr26_user', name);
+    localStorage.setItem('pr26_status', 'pending');
+    showPending();
+  }
+};
+
+// REJESTRACJA — nowy użytkownik
+window.doRegister = async function(){
+  const name = document.getElementById('reg-name').value.trim();
+  const pass = document.getElementById('reg-pass').value;
+  const pass2 = document.getElementById('reg-pass2').value;
+  const errEl = document.getElementById('register-error');
+  errEl.textContent='';
+
+  if (!name){ errEl.textContent='Wpisz nazwę'; return; }
+  if (name.length < 2){ errEl.textContent='Nazwa musi mieć min. 2 znaki'; return; }
+  if (!pass){ errEl.textContent='Wpisz hasło'; return; }
+  if (pass.length < 4){ errEl.textContent='Hasło musi mieć min. 4 znaki'; return; }
+  if (pass !== pass2){ errEl.textContent='Hasła się nie zgadzają'; return; }
+  if (name === MODERATOR){ errEl.textContent='Ta nazwa jest zarezerwowana'; return; }
+
+  // Sprawdź czy nazwa zajęta
+  const snap = await get(ref(db,`users/${name}`));
+  if (snap.exists()){
+    errEl.textContent='Ta nazwa jest już zajęta. Zaloguj się lub wybierz inną.';
+    return;
+  }
+
+  const passHash = await hashPassword(pass);
+  currentUser = name; userStatus = 'pending';
+  localStorage.setItem('pr26_user', name);
+  localStorage.setItem('pr26_status', 'pending');
+  await set(ref(db,`users/${name}`), {status:'pending', passHash, ts:Date.now()});
+  showPending();
+};
+
+window.cancelRequest = async function(){
+  if (currentUser) await remove(ref(db,`users/${currentUser}`));
+  currentUser=''; userStatus='';
+  localStorage.removeItem('pr26_user');
+  localStorage.removeItem('pr26_status');
+  location.reload();
+};
+
+window.logout = function(){
+  if (gpsWatchId) navigator.geolocation.clearWatch(gpsWatchId);
+  if (currentUser) set(ref(db,`locations/${currentUser}`), null);
+  currentUser=''; userStatus='';
+  localStorage.removeItem('pr26_user');
+  localStorage.removeItem('pr26_status');
+  location.reload();
+};
+
+function showPending(){
+  hide('login-screen'); hide('loading-screen'); hide('main-screen');
+  show('pending-screen');
+  document.getElementById('pending-name-display').textContent = currentUser;
+  // Nasłuchuj akceptacji
+  onValue(ref(db,`users/${currentUser}`), snap => {
+    if (snap.exists() && snap.val().status === 'accepted'){
+      userStatus='accepted';
+      localStorage.setItem('pr26_status','accepted');
+      showMain();
+    }
+  });
+}
+
+function show(id){ document.getElementById(id).style.display='flex'; }
+function hide(id){ document.getElementById(id).style.display='none'; }
+
+function showMain(){
+  hide('login-screen'); hide('pending-screen'); hide('loading-screen');
+  show('loading-screen');
+  document.getElementById('username-display').textContent = currentUser+(currentUser===MODERATOR?' 🛡️':'');
+  if (currentUser===MODERATOR){
+    document.getElementById('dtab-mod').style.display='flex';
+    document.getElementById('nav-mod').style.display='flex';
+  }
+  startListening();
+}
+
+function startListening(){
+  onValue(ref(db,'attendees'), snap=>{
+    allData=snap.val()||{};
+    if(!allData[currentUser]) allData[currentUser]={};
+    hide('loading-screen');
+    show('main-screen');
+    renderMyPlan(); renderAll();
+  });
+  onValue(ref(db,'chat'), snap=>{
+    const data=snap.val()||{};
+    chatMessages=Object.entries(data).map(([key,val])=>({...val,key})).sort((a,b)=>a.ts-b.ts);
+    renderChat();
+  });
+
+  onValue(ref(db,'pins'), snap=>{
+    pins=snap.val()||{};
+    renderFestivalPins();
+    renderPinsList();
+  });
+  onValue(ref(db,'locations'), snap=>{
+    locations=snap.val()||{};
+    renderGPSUsers();
+  });
+  if (currentUser===MODERATOR){
+    onValue(ref(db,'users'), snap=>{
+      const users=snap.val()||{};
+      renderModPanel(users);
+    });
+  }
+}
+
+// --- MOD PANEL ---
+function renderModPanel(users){
+  const pending=Object.entries(users).filter(([u,d])=>d.status==='pending');
+  const accepted=Object.entries(users).filter(([u,d])=>d.status==='accepted'&&u!==MODERATOR);
+
+  const pl=document.getElementById('pending-list');
+  pl.innerHTML=pending.length?pending.map(([u])=>`
+    <div class="pending-item">
+      <div class="pending-name">${u}</div>
+      <div class="pending-actions">
+        <button class="accept-btn" onclick="acceptUser('${u}')">✓ Akceptuj</button>
+        <button class="reject-btn" onclick="rejectUser('${u}')">✕ Odrzuć</button>
+      </div>
+    </div>`).join(''):'<div class="empty">Brak oczekujących próśb</div>';
+
+  const ul=document.getElementById('users-list');
+  ul.innerHTML=accepted.length?accepted.map(([u])=>`
+    <div class="user-item">
+      <div class="user-info"><div class="online-dot"></div><div class="person-name">${u}</div></div>
+      <button class="kick-btn" onclick="kickUser('${u}')">Usuń użytkownika</button>
+    </div>`).join(''):'<div class="empty">Brak użytkowników</div>';
+}
+
+window.acceptUser = async function(name){
+  await set(ref(db,`users/${name}/status`),'accepted');
+};
+window.rejectUser = async function(name){
+  await remove(ref(db,`users/${name}`));
+};
+window.kickUser = async function(name){
+  if (!confirm(`Usunąć użytkownika "${name}"?`)) return;
+  await remove(ref(db,`users/${name}`));
+  await remove(ref(db,`attendees/${name}`));
+  await remove(ref(db,`locations/${name}`));
+};
+
+// --- CONCERTS ---
+window.toggleConcert = async function(id){
+  if(!allData[currentUser]) allData[currentUser]={};
+  allData[currentUser][id]=!allData[currentUser][id];
+  await set(ref(db,`attendees/${currentUser}`),allData[currentUser]);
+};
+
+function renderMyPlan(){
+  let html='';
+  for(const day of DAYS){
+    const stages=[...new Set(CONCERTS.filter(c=>c.day===day).map(c=>c.stage))];
+    html+=`<div class="day-block"><div class="day-label">${day}</div>`;
+    for(const stage of stages){
+      const cs=CONCERTS.filter(c=>c.day===day&&c.stage===stage);
+      html+=`<div class="stage-label">${stage}</div><div class="concerts">`;
+      for(const c of cs){
+        const sel=!!(allData[currentUser]&&allData[currentUser][c.id]);
+        const att=Object.entries(allData).filter(([u,ids])=>ids&&ids[c.id]).map(([u])=>u);
+        const avs=att.map(u=>`<span class="av${u===currentUser?' me':''}">${u}</span>`).join('');
+        html+=`<div class="concert${sel?' selected':''}" style="background:${c.color};border-color:${sel?'#FF6B00':c.border}" onclick="toggleConcert('${c.id}')">
+          <div class="cname" style="color:${c.border}">${c.name}</div>
+          <div class="ctime">${c.time}</div>
+          ${att.length?`<div class="attendees">${avs}</div>`:''}
+        </div>`;
+      }
+      html+='</div>';
+    }
+    // STREFA ASP
+    const aspDay=ASP.filter(a=>a.day===day);
+    if(aspDay.length){
+      html+=`<div class="stage-label" style="color:#bb8800">DUŻY NAMIOT ASP · SPOTKANIA</div><div class="concerts">`;
+      for(const a of aspDay){
+        const sel=!!(allData[currentUser]&&allData[currentUser][a.id]);
+        const att=Object.entries(allData).filter(([u,ids])=>ids&&ids[a.id]).map(([u])=>u);
+        const avs=att.map(u=>`<span class="av${u===currentUser?' me':''}">${u}</span>`).join('');
+        html+=`<div class="concert${sel?' selected':''}" style="background:${a.color};border-color:${sel?'#FF6B00':a.border}" onclick="toggleConcert('${a.id}')">
+          <div style="font-size:9px;color:#886600;margin-bottom:2px;letter-spacing:1px">ASP</div>
+          <div class="cname" style="color:${a.border}">${a.name}</div>
+          <div class="ctime">${a.time}</div>
+          ${att.length?`<div class="attendees">${avs}</div>`:''}
+        </div>`;
+      }
+      html+='</div>';
+    }
+    html+='</div>';
+  }
+  document.getElementById('concerts-list').innerHTML=html;
+}
+
+// --- WSZYSCY ---
+function renderAll(){
+  let html='';
+  for(const user of Object.keys(allData)){
+    const ids=allData[user]||{};
+    const selConcerts=CONCERTS.filter(c=>ids[c.id]);
+    const selAsp=ASP.filter(a=>ids[a.id]);
+    if(!selConcerts.length && !selAsp.length) continue;
+    const isMod=user===MODERATOR;
+    let card=`<div class="person-card"><div class="person-header">
+      <div class="person-name">${user}</div>${isMod?'<div class="mod-badge">MOD</div>':''}
+      ${currentUser===MODERATOR&&!isMod?`<button class="kick-btn" onclick="kickUser('${user}')">Usuń</button>`:''}
+    </div>`;
+    for(const day of DAYS){
+      const dc=selConcerts.filter(c=>c.day===day);
+      const da=selAsp.filter(a=>a.day===day);
+      if(!dc.length && !da.length) continue;
+      card+=`<div class="day-group"><div class="day-group-label">${day.split(' · ')[0]}</div><div class="badges">`;
+      card+=dc.map(c=>`<span class="badge">${c.name} <span>${c.time}</span></span>`).join('');
+      card+=da.map(a=>`<span class="badge" style="border-color:#bb880055;color:#ddaa44">${a.name} <span style="color:#886600">${a.time} ASP</span></span>`).join('');
+      card+='</div></div>';
+    }
+    card+='</div>';
+    html+=card;
+  }
+  document.getElementById('all-view').innerHTML=html||'<div class="empty">Nikt jeszcze nie zaznaczył koncertów.</div>';
+}
+
+// --- CZAT ---
+window.sendMsg = async function(){
+  const input=document.getElementById('chat-input');
+  const text=input.value.trim();
+  if(!text) return;
+  input.value='';
+  const msg={user:currentUser,text,ts:Date.now()};
+  if(replyTo) msg.replyTo={key:replyTo.key,user:replyTo.user,text:replyTo.text.slice(0,80)};
+  await push(ref(db,'chat'),msg);
+  cancelReply();
+};
+window.deleteMsg = async function(key){ await remove(ref(db,`chat/${key}`)); };
+window.startReply = function(key,user,text){
+  replyTo={key,user,text};
+  document.getElementById('reply-author').textContent='Odpowiadasz: '+user;
+  document.getElementById('reply-text-preview').textContent=text.slice(0,60)+(text.length>60?'…':'');
+  document.getElementById('reply-bar').style.display='flex';
+  document.getElementById('chat-input').focus();
+};
+window.cancelReply = function(){
+  replyTo=null;
+  document.getElementById('reply-bar').style.display='none';
+};
+window.scrollToMsg = function(key){
+  const el=document.getElementById('cmsg-'+key);
+  if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.style.transition='background 0.3s';el.style.background='#2a1a00';setTimeout(()=>el.style.background='',900);}
+};
+
+function renderChat(){
+  const el=document.getElementById('chat-messages');
+  if(!chatMessages.length){el.innerHTML='<div class="empty">Brak wiadomości. Napisz coś! 👋</div>';return;}
+  const isMod=currentUser===MODERATOR;
+  const atBottom=el.scrollHeight-el.scrollTop-el.clientHeight<80;
+  el.innerHTML=chatMessages.map(m=>{
+    const mine=m.user===currentUser;
+    const canDelete=mine||isMod;
+    const t=new Date(m.ts);
+    const time=`${t.getHours().toString().padStart(2,'0')}:${t.getMinutes().toString().padStart(2,'0')}`;
+    const replyHtml=m.replyTo?`<div class="reply-preview${m.replyTo.user===currentUser?'':' or'}" onclick="scrollToMsg('${m.replyTo.key}')"><strong>${m.replyTo.user}</strong>${m.replyTo.text.slice(0,60)}${m.replyTo.text.length>60?'…':''}</div>`:'';
+    const txt=m.text.replace(/</g,'&lt;').replace(/\n/g,'<br>');
+    return `<div class="msg-wrap ${mine?'mine':'others'}" id="cmsg-${m.key}">
+      <div class="msg">
+        <div class="msg-author">${m.user}${m.user===MODERATOR?' 🛡️':''}</div>
+        ${replyHtml}
+        <div class="msg-text">${txt}</div>
+        <div class="msg-footer">
+          <div class="msg-actions">
+            <button class="action-btn" onclick="startReply('${m.key}','${m.user.replace(/'/g,"\\'")}',\`${m.text.replace(/`/g,'\\`').replace(/\n/g,' ').slice(0,80)}\`)">↩ Odpowiedz</button>
+            ${canDelete?`<button class="action-btn red" onclick="deleteMsg('${m.key}')">Usuń</button>`:''}
+          </div>
+          <span class="msg-time">${time}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  if(atBottom) el.scrollTop=el.scrollHeight;
+}
+
+// --- MAPA TERENU: pinezki ---
+const PIN_EXPIRY_MS = 15 * 60 * 1000;
+let mapScale2=1, mapOriginX2=0, mapOriginY2=0;
+
+let mapImgW=0, mapImgH=0;
+let currentPinMode = 'temp';
+let pendingPinCoords = null;
+
+window.setPinMode = function(mode){
+  currentPinMode = mode;
+  const tempBtn = document.getElementById('pin-mode-temp');
+  const permBtn = document.getElementById('pin-mode-perm');
+  if(mode==='temp'){
+    tempBtn.style.cssText='background:#1a0800;border:1.5px solid #FF6B00;color:#FF6B00;border-radius:8px;padding:5px 10px;font-size:11px;cursor:pointer;font-weight:600';
+    permBtn.style.cssText='background:transparent;border:1.5px solid #333;color:#555;border-radius:8px;padding:5px 10px;font-size:11px;cursor:pointer;font-weight:600';
+  } else {
+    permBtn.style.cssText='background:#001a1a;border:1.5px solid #009999;color:#00cccc;border-radius:8px;padding:5px 10px;font-size:11px;cursor:pointer;font-weight:600';
+    tempBtn.style.cssText='background:transparent;border:1.5px solid #333;color:#555;border-radius:8px;padding:5px 10px;font-size:11px;cursor:pointer;font-weight:600';
+  }
+};
+
+window.switchMapTab = function(tab){
+  document.getElementById('map-festival').style.display=tab==='festival'?'flex':'none';
+  document.getElementById('map-google').style.display=tab==='google'?'flex':'none';
+  const ft=document.getElementById('msubtab-festival');
+  const gt=document.getElementById('msubtab-google');
+  ft.style.color=tab==='festival'?'#FF6B00':'#555';
+  ft.style.borderBottomColor=tab==='festival'?'#FF6B00':'transparent';
+  gt.style.color=tab==='google'?'#FF6B00':'#555';
+  gt.style.borderBottomColor=tab==='google'?'#FF6B00':'transparent';
+};
+
+async function handleMapClick(clientX, clientY){
+  const container=document.getElementById('map-container');
+  const rect=container.getBoundingClientRect();
+  const mx=clientX-rect.left, my=clientY-rect.top;
+  const px=(mx-mapOriginX2)/(mapImgW*mapScale2);
+  const py=(my-mapOriginY2)/(mapImgH*mapScale2);
+  if(px<0||px>1||py<0||py>1) return;
+
+  if(currentPinMode==='temp'){
+    // Usuń stary temp pin tego użytkownika jeśli istnieje
+    const myOldTemp = Object.entries(pins).find(([k,p])=>p&&p.type==='temp'&&p.owner===currentUser);
+    if(myOldTemp) await remove(ref(db,`pins/${myOldTemp[0]}`));
+    const expiresAt=Date.now()+PIN_EXPIRY_MS;
+    const key='temp_'+currentUser+'_'+Date.now();
+    await set(ref(db,`pins/${key}`),{px,py,expiresAt,ts:Date.now(),type:'temp',label:'',owner:currentUser});
+  } else {
+    pendingPinCoords={px,py};
+    document.getElementById('pin-modal').style.display='flex';
+    document.getElementById('pin-label-input').value='';
+    setTimeout(()=>document.getElementById('pin-label-input').focus(),100);
+  }
+}
+
+window.savePermanentPin = async function(){
+  const label=document.getElementById('pin-label-input').value.trim();
+  if(!pendingPinCoords) return;
+  const {px,py}=pendingPinCoords;
+  const key=Date.now()+'_'+Math.random().toString(36).slice(2,7);
+  await set(ref(db,`pins/${key}`),{px,py,ts:Date.now(),type:'perm',label:label||'Punkt',owner:currentUser});
+  pendingPinCoords=null;
+  document.getElementById('pin-modal').style.display='none';
+};
+
+window.closePinModal = function(){
+  document.getElementById('pin-modal').style.display='none';
+  pendingPinCoords=null;
+};
+
+window.deletePin = async function(key){
+  await remove(ref(db,`pins/${key}`));
+};
+
+function renderFestivalPins(){
+  const pinsLayer=document.getElementById('map-pins-layer');
+  if(!pinsLayer) return;
+  const now=Date.now();
+  const isMod=currentUser===MODERATOR;
+
+  // Aktywne piny
+  const activePins=Object.entries(pins).filter(([k,p])=>{
+    if(!p) return false;
+    if(p.type==='perm') return true;
+    return p.expiresAt&&p.expiresAt>now;
+  });
+
+  if(!activePins.length){pinsLayer.innerHTML='';return;}
+
+  pinsLayer.innerHTML=activePins.map(([key,p])=>{
+    const color=getColor(p.owner||'?');
+    const screenX=p.px*mapImgW*mapScale2+mapOriginX2;
+    const screenY=p.py*mapImgH*mapScale2+mapOriginY2;
+    const isMe=p.owner===currentUser;
+    const canDelete=isMe||isMod;
+    const isPerm=p.type==='perm';
+
+    let labelText = isPerm
+      ? `📌 ${p.label||p.owner}`
+      : `⏱ ${p.owner} · ${Math.max(0,Math.round((p.expiresAt-now)/60000))}min`;
+
+    const pinShape = isPerm
+      ? `<div style="width:14px;height:14px;border-radius:50%;background:${color};border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.7)"></div>`
+      : `<div style="width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:13px solid ${color};filter:drop-shadow(0 1px 3px rgba(0,0,0,0.6))"></div>`;
+
+    const deleteBtn = canDelete
+      ? `<button 
+          onmousedown="event.stopPropagation()"
+          onmouseup="event.stopPropagation()"
+          onclick="event.stopPropagation();window.deletePin('${key}')"
+          ontouchstart="event.stopPropagation()"
+          ontouchend="event.stopPropagation();event.preventDefault();window.deletePin('${key}')"
+          style="margin-left:5px;background:#cc444488;border:1px solid #cc4444;color:#fff;cursor:pointer;font-size:10px;padding:1px 5px;line-height:1.4;border-radius:4px;flex-shrink:0">✕</button>`
+      : '';
+
+    return `<div 
+        onmousedown="event.stopPropagation()"
+        onmouseup="event.stopPropagation()"
+        ontouchstart="event.stopPropagation()"
+        ontouchend="event.stopPropagation()"
+        style="position:absolute;left:${screenX}px;top:${screenY}px;transform:translate(-50%,-100%);display:flex;flex-direction:column;align-items:center;pointer-events:auto;z-index:10;cursor:default">
+      <div style="background:#000000ee;color:${color};font-size:9px;font-weight:700;padding:3px 7px 3px 8px;border-radius:10px;margin-bottom:3px;white-space:nowrap;border:1px solid ${color}55;display:flex;align-items:center;gap:2px;max-width:160px;box-shadow:0 2px 6px rgba(0,0,0,0.5)">
+        <span style="overflow:hidden;text-overflow:ellipsis">${labelText}</span>${deleteBtn}
+      </div>
+      ${pinShape}
+    </div>`;
+  }).join('');
+}
+
+function renderPinsList(){
+  const el = document.getElementById('pins-list');
+  if(!el) return;
+  const now = Date.now();
+  const isMod = currentUser === MODERATOR;
+  const activePins = Object.entries(pins).filter(([k,p])=>{
+    if(!p) return false;
+    if(p.type==='perm') return true;
+    return p.expiresAt && p.expiresAt > now;
+  });
+  if(!activePins.length){
+    el.innerHTML='<div style="font-size:11px;color:#333;text-align:center;padding:4px">Brak pinezek — kliknij na mapę żeby dodać</div>';
+    return;
+  }
+  el.innerHTML = activePins.map(([key,p])=>{
+    const color = getColor(p.owner||'?');
+    const isMe = p.owner === currentUser;
+    const canDelete = isMe || isMod;
+    const isPerm = p.type === 'perm';
+    const timeInfo = isPerm ? '📌 stały' : `⏱ ${Math.max(0,Math.round((p.expiresAt-now)/60000))}min`;
+    return `<div style="display:flex;align-items:center;gap:6px;padding:3px 6px;background:#1a1a1a;border-radius:6px;border-left:3px solid ${color}">
+      <span style="font-size:9px;color:${color};font-weight:700;min-width:50px">${p.owner}</span>
+      <span style="font-size:10px;color:#aaa;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${isPerm?(p.label||'Punkt'):'(tymczasowy)'}</span>
+      <span style="font-size:9px;color:#555;white-space:nowrap">${timeInfo}</span>
+      ${canDelete?`<button onclick="window.deletePin('${key}')" style="background:transparent;border:none;color:#cc4444;cursor:pointer;font-size:12px;padding:0 2px;line-height:1;flex-shrink:0">✕</button>`:''}
+    </div>`;
+  }).join('');
+
+  // MOD widzi X przy każdej pinezce (już w canDelete), nie ma "usuń wszystkie"
+  
+}
+
+
+
+// Nadpisz renderFestivalPins żeby też renderowała listę
+const _origRenderFestivalPins = renderFestivalPins;
+function renderFestivalPinsAndList(){
+  _origRenderFestivalPins();
+  renderPinsList();
+}
+
+// Auto-odświeżanie pinezek (wygasłe temp)
+setInterval(renderFestivalPinsAndList, 30000);
+
+// --- GPS Google Maps ---
+window.toggleGPS = async function(){
+  if(!gpsActive){
+    if(!navigator.geolocation){alert('Twoja przeglądarka nie obsługuje GPS');return;}
+    const btn=document.getElementById('gps-btn');
+    const status=document.getElementById('gps-status');
+    btn.textContent='⏳ Czekam na GPS...';
+    btn.style.borderColor='#886600';
+    btn.style.color='#cc9900';
+    gpsWatchId=navigator.geolocation.watchPosition(
+      async pos=>{
+        const {latitude:lat,longitude:lng,accuracy}=pos.coords;
+        await set(ref(db,`locations/${currentUser}`),{lat,lng,accuracy,ts:Date.now()});
+        gpsActive=true;
+        btn.textContent='🟢 Lokalizacja aktywna — kliknij aby wyłączyć';
+        btn.style.borderColor='#7ecb35'; btn.style.color='#aaffaa';
+        if(status) status.textContent=`Dokładność: ~${Math.round(accuracy)}m`;
+        renderGPSUsers();
+        // Otwórz Google Maps z moją lokalizacją
+        const frame=document.getElementById('google-map-frame');
+        if(frame) frame.src=`https://maps.google.com/maps?q=${lat},${lng}&z=17&output=embed`;
+      },
+      err=>{
+        btn.textContent='📍 Udostępnij lokalizację GPS';
+        btn.style.borderColor='#3a7d00'; btn.style.color='#7ecb35';
+        if(status) status.textContent='Błąd GPS: '+err.message;
+      },
+      {enableHighAccuracy:true,maximumAge:5000,timeout:15000}
+    );
+  } else {
+    if(gpsWatchId) navigator.geolocation.clearWatch(gpsWatchId);
+    await set(ref(db,`locations/${currentUser}`),null);
+    gpsActive=false;
+    const btn=document.getElementById('gps-btn');
+    btn.textContent='📍 Udostępnij lokalizację GPS';
+    btn.style.borderColor='#3a7d00'; btn.style.color='#7ecb35';
+    const status=document.getElementById('gps-status');
+    if(status) status.textContent='';
+    // Wróć do widoku Czaplinka
+    const frame=document.getElementById('google-map-frame');
+    if(frame) frame.src='https://maps.google.com/maps?q=Czaplinek,+Poland&z=14&output=embed';
+    renderGPSUsers();
+  }
+};
+
+function renderGPSUsers(){
+  const el=document.getElementById('gps-active-users');
+  if(!el) return;
+  const now=Date.now();
+  const active=Object.entries(locations).filter(([u,l])=>l&&l.ts&&(now-l.ts)<120000);
+  if(!active.length){el.innerHTML='<div style="font-size:11px;color:#333">Brak aktywnych lokalizacji</div>';return;}
+  el.innerHTML=active.map(([u,l])=>{
+    const color=getColor(u);
+    const age=Math.round((now-l.ts)/1000);
+    return `<div style="display:flex;align-items:center;gap:5px;background:#111;border-radius:8px;padding:4px 8px;border:1px solid ${color}33">
+      <div style="width:8px;height:8px;border-radius:50%;background:${color}"></div>
+      <span style="font-size:11px;color:${color};font-weight:600">${u}</span>
+      <span style="font-size:10px;color:#444">${age<60?age+'s temu':Math.round(age/60)+'min temu'}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderPins(){ renderFestivalPins(); renderGPSUsers(); }
+
+// --- TABS ---
+window.switchTab = function(tab){
+  currentTab=tab;
+  const allTabs=['my','all','chat','map','mod','photos'];
+  allTabs.forEach(t=>{
+    const c=document.getElementById(`tab-${t}`);
+    if(c) c.style.display=t===tab?(t==='chat'||t==='map'?'flex':'block'):'none';
+    const nb=document.getElementById(`nav-${t}`);
+    if(nb) nb.classList.toggle('active',t===tab);
+    const db2=document.getElementById(`dtab-${t}`);
+    if(db2) db2.classList.toggle('active',t===tab);
+  });
+  if(tab==='chat'){const el=document.getElementById('chat-messages');setTimeout(()=>el.scrollTop=el.scrollHeight,50);}
+  if(tab==='map') setTimeout(()=>{renderFestivalPins();renderGPSUsers();},100);
+};
+
+// --- MAPA TERENU zoom/pan ---
+(function(){
+  const container=document.getElementById('map-container');
+  const img=document.getElementById('map-img');
+  let scale=1,minScale=0.3,maxScale=8,originX=0,originY=0;
+  let isDragging=false,startX,startY,lastDist=0,lastTouchX,lastTouchY;
+  function clamp(v,a,b){return Math.min(Math.max(v,a),b);}
+  function applyT(){
+    img.style.transform=`translate(${originX}px,${originY}px) scale(${scale})`;
+    // Zapisz do globalnych zmiennych dla pinezek
+    mapScale2=scale; mapOriginX2=originX; mapOriginY2=originY;
+    mapImgW=img.naturalWidth||2000; mapImgH=img.naturalHeight||1000;
+    renderFestivalPins();
+  }
+  function fit(){
+    const cw=container.offsetWidth,ch=container.offsetHeight;
+    const iw=img.naturalWidth,ih=img.naturalHeight;
+    if(!iw||!ih||!cw||!ch) return;
+    scale=Math.min(cw/iw,ch/ih); minScale=scale*0.5;
+    originX=(cw-iw*scale)/2; originY=(ch-ih*scale)/2;
+    mapImgW=iw; mapImgH=ih;
+    applyT();
+  }
+  if(img.complete&&img.naturalWidth) fit();
+  else{img.onload=fit; img.onerror=()=>{container.innerHTML='<div style="color:#555;text-align:center;padding:40px;font-size:13px">Nie można załadować mapy</div>';};}
+  window.addEventListener('resize',fit);
+
+  // Wheel zoom
+  container.addEventListener('wheel',e=>{
+    e.preventDefault();
+    const r=container.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
+    const d=e.deltaY<0?1.15:0.87,ns=clamp(scale*d,minScale,maxScale);
+    originX=mx-(mx-originX)*(ns/scale); originY=my-(my-originY)*(ns/scale); scale=ns; applyT();
+  },{passive:false});
+
+  // Mouse drag + click — zintegrowane
+  let mdX, mdY, mdTime, mdMoved=false;
+  container.addEventListener('mousedown',e=>{
+    if(e.button!==0) return;
+    isDragging=true; mdMoved=false;
+    mdX=e.clientX; mdY=e.clientY; mdTime=Date.now();
+    startX=e.clientX-originX; startY=e.clientY-originY;
+    container.style.cursor='grabbing';
+    e.preventDefault();
+  });
+  window.addEventListener('mousemove',e=>{
+    if(!isDragging) return;
+    if(Math.abs(e.clientX-mdX)>5||Math.abs(e.clientY-mdY)>5) mdMoved=true;
+    originX=e.clientX-startX; originY=e.clientY-startY; applyT();
+  });
+  window.addEventListener('mouseup',e=>{
+    if(!isDragging) return;
+    isDragging=false; container.style.cursor='crosshair';
+    // Jeśli minimalne przesunięcie i krótki czas = kliknięcie
+    if(!mdMoved && Date.now()-mdTime<400){
+      handleMapClick(e.clientX, e.clientY);
+    }
+  });
+  container.addEventListener('touchstart',e=>{
+    if(e.touches.length===1){lastTouchX=e.touches[0].clientX-originX;lastTouchY=e.touches[0].clientY-originY;}
+    else if(e.touches.length===2){lastDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);}
+  },{passive:true});
+  container.addEventListener('touchmove',e=>{
+    e.preventDefault();
+    if(e.touches.length===1){originX=e.touches[0].clientX-lastTouchX;originY=e.touches[0].clientY-lastTouchY;applyT();}
+    else if(e.touches.length===2){
+      const dist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+      const r=container.getBoundingClientRect(),mx=(e.touches[0].clientX+e.touches[1].clientX)/2-r.left,my=(e.touches[0].clientY+e.touches[1].clientY)/2-r.top;
+      const ns=clamp(scale*(dist/lastDist),minScale,maxScale);
+      originX=mx-(mx-originX)*(ns/scale); originY=my-(my-originY)*(ns/scale); scale=ns; lastDist=dist; applyT();
+    }
+  },{passive:false});
+
+  // Touch tap = klik na mapę (oddzielny od touch drag/pinch)
+  let tapX, tapY, tapTime, tapMoved=false;
+  container.addEventListener('touchstart',e=>{
+    if(e.touches.length===1){tapX=e.touches[0].clientX;tapY=e.touches[0].clientY;tapTime=Date.now();tapMoved=false;}
+  },{passive:true});
+  container.addEventListener('touchmove',e=>{
+    if(e.touches.length===1&&(Math.abs(e.touches[0].clientX-tapX)>10||Math.abs(e.touches[0].clientY-tapY)>10)) tapMoved=true;
+  },{passive:true});
+  container.addEventListener('touchend',e=>{
+    if(e.changedTouches.length===1&&!tapMoved&&Date.now()-tapTime<400){
+      handleMapClick(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+    }
+  },{passive:true});
+})();
+
+// INIT
+(async function init(){
+  if(!currentUser){show('login-screen');return;}
+  const snap=await get(ref(db,`users/${currentUser}`));
+  if(snap.exists()&&snap.val().status==='accepted'){
+    userStatus='accepted';
+    localStorage.setItem('pr26_status','accepted');
+    showMain();
+  } else if(snap.exists()&&snap.val().status==='pending'){
+    userStatus='pending';
+    showPending();
+  } else {
+    // Brak w bazie — wyczyść i pokaż login
+    currentUser=''; userStatus='';
+    localStorage.removeItem('pr26_user');
+    localStorage.removeItem('pr26_status');
+    show('login-screen');
+  }
+})();
+</script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('sw.js')
+      .then(r=>console.log('SW registered'))
+      .catch(e=>console.log('SW error:', e));
+  });
+}
+</script>
+</body>
+</html>
